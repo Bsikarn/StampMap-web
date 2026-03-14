@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# StampMap Web
 
-## Getting Started
+A premium, mobile-first interactive stamp collection map application. Explore locations, collect stamps via NFC, manage your stamp passport books, and exchange stamps for exclusive souvenirs.
 
-First, run the development server:
+## Tech Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### Languages
+- TypeScript
+- CSS (Tailwind CSS v4)
+
+### Frontend
+- Next.js 16 (App Router)
+- React 19
+- Tailwind CSS v4 with custom design tokens
+- shadcn/ui (Button, Card, Dialog, Input, Select, Badge, Tabs, Switch, Progress, Textarea, Popover, Separator)
+- Poppins font (Google Fonts via `next/font`)
+
+### State Management
+- Zustand v5
+
+### Icons
+- Lucide React
+
+### Build Tools
+- PostCSS
+- ESLint
+
+## Features
+
+- **Splash Screen** — Branded loading screen with pulse animation and auto-redirect
+- **Interactive Map View** — Static mockup map with SVG pins (collected/uncollected), proximity notification, map selector dropdown (Jeju, Taiwan, Japan, Thailand, Singapore)
+- **Location Details** — Hero image with 3D View button, history section, star ratings, review system with write-a-review form
+- **Stamp Book** — Progress tracker with progress bar, passport visualization, stamp detail carousel, NFC scan simulation, success modal
+- **Souvenir Exchange** — 2-column product grid with stock badges, stamp exchange modal with passport book selection
+- **Authentication** — Login/Sign Up segmented tabs, form inputs with icons, social login (Google, Facebook, Apple)
+- **Settings** — Grouped setting sections (Account, Notifications, Location, Privacy, About) with iOS-style toggle switches
+- **Bottom Navigation** — Floating nav bar with map selector center button
+
+## Directory Structure
+
+```
+stampmap_web/
+├── app/
+│   ├── globals.css          # Design system (custom colors, shadows, animations)
+│   ├── layout.tsx           # Root layout (Poppins font, mobile viewport)
+│   ├── page.tsx             # Screen 2: Main Map View (Home)
+│   ├── splash/page.tsx      # Screen 1: Splash/Loading
+│   ├── location/[id]/page.tsx  # Screen 3: Location Details & Reviews
+│   ├── book/page.tsx        # Screen 4: Stamp Book
+│   ├── souvenir/page.tsx    # Screen 5: Souvenir Exchange
+│   ├── auth/page.tsx        # Screen 6: Authentication
+│   └── settings/page.tsx    # Screen 7: Settings
+├── components/
+│   ├── bottom-nav.tsx       # Bottom navigation bar with map selector
+│   └── ui/                  # shadcn/ui components (DO NOT TOUCH)
+├── store/
+│   └── use-stamp-store.ts   # Zustand global state (stamps, maps, tabs)
+├── lib/
+│   └── utils.ts             # Utility functions (cn helper)
+├── docs/private/            # Private documentation (Thai)
+└── public/                  # Static assets
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+> **DO NOT TOUCH**: `components/ui/` — These are auto-generated shadcn/ui components. Do not manually edit them. Use `npx shadcn@latest add <component>` to add new ones.
