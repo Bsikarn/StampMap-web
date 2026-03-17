@@ -82,35 +82,36 @@ export default function SouvenirPage() {
   };
 
   return (
-    <div className="relative min-h-dvh bg-stamp-light-bg pb-24">
+    <div className="relative min-h-dvh bg-slate-50 pb-24">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-stamp-light-bg/80 backdrop-blur-md">
-        <div className="mx-auto flex max-w-2xl items-center gap-3 px-5 py-4">
+      <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-md shadow-sm">
+        <div className="mx-auto flex items-center gap-4 px-5 py-4">
           <Link
             href="/"
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-sm"
+            className="flex items-center gap-2 text-sm font-semibold text-slate-700 hover:text-brand transition-colors"
           >
-            <ArrowLeft className="h-4 w-4" />
+            <ArrowLeft className="h-5 w-5" />
+            <span className="hidden sm:inline">Back to Map</span>
           </Link>
           <div className="flex-1">
-            <h1 className="text-lg font-bold text-foreground">
+            <h1 className="text-xl font-bold text-slate-900 leading-none">
               Souvenir Exchange
             </h1>
-            <p className="text-xs text-muted-foreground">
+            <p className="mt-1 text-xs font-medium text-slate-500">
               Redeem stamps for souvenirs
             </p>
           </div>
-          <div className="flex items-center gap-1.5 rounded-full bg-stamp-dark-blue/10 px-3 py-1">
-            <Package className="h-3.5 w-3.5 text-stamp-dark-blue" />
-            <span className="text-xs font-semibold text-stamp-dark-blue">
+          <div className="flex items-center gap-1.5 rounded-full bg-brand/10 px-3 py-1.5 ring-1 ring-brand/20">
+            <Package className="h-4 w-4 text-brand" />
+            <span className="text-xs font-bold text-brand">
               {souvenirItems.filter((s) => s.inStock).length} available
             </span>
           </div>
         </div>
       </div>
 
-      {/* 2-column grid - responsive: 2 cols on mobile, 3 on md, 4 on lg */}
-      <div className="mx-auto grid max-w-2xl grid-cols-2 gap-3 px-5 pt-2 sm:grid-cols-3 lg:grid-cols-4">
+      {/* Responsive Grid - allows unlimited expansion on large screens */}
+      <div className="mx-auto grid grid-cols-2 gap-4 px-5 pt-6 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 border-b border-transparent">
         {souvenirItems.map((item) => (
           <div
             key={item.id}
@@ -131,19 +132,19 @@ export default function SouvenirPage() {
 
             {/* Card content */}
             <div className="flex flex-1 flex-col p-3">
-              <h3 className="text-xs font-semibold leading-snug text-slate-800">
+              <h3 className="text-sm font-bold leading-snug text-slate-900 mt-1">
                 {item.name}
               </h3>
-              <div className="mt-1.5 flex items-center gap-1">
-                <span className="text-[11px] font-bold text-brand">{item.stampsRequired}</span>
-                <span className="text-[10px] text-slate-400">stamps</span>
+              <div className="mt-2 flex items-center gap-1">
+                <span className="text-sm font-bold text-brand">{item.stampsRequired}</span>
+                <span className="text-xs font-medium text-slate-500">stamps</span>
               </div>
 
               <Button
                 size="sm"
                 onClick={() => openExchangeModal(item)}
                 disabled={!item.inStock}
-                className="mt-2.5 w-full rounded-xl bg-brand text-[11px] font-semibold text-white hover:bg-blue-700 disabled:bg-slate-100 disabled:text-slate-300"
+                className="mt-3 w-full rounded-xl bg-brand py-4 text-sm font-bold text-white shadow-sm hover:bg-blue-700 disabled:bg-slate-100 disabled:text-slate-400"
               >
                 <Repeat className="mr-1 h-3 w-3" />
                 Redeem

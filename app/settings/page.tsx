@@ -194,24 +194,31 @@ export default function SettingsPage() {
 
   return (
     <div className="relative min-h-dvh bg-gray-50 pb-24">
-      {/* Header */}
-      <div className="sticky top-0 z-10 bg-gray-50/80 backdrop-blur-md">
-        <div className="mx-auto flex max-w-2xl items-center gap-3 px-5 py-4">
+      <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-md shadow-sm">
+        <div className="mx-auto flex items-center gap-4 px-5 py-4">
           <Link
             href="/"
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-sm"
+            className="flex items-center gap-2 text-sm font-semibold text-slate-700 hover:text-brand transition-colors"
           >
-            <ArrowLeft className="h-4 w-4" />
+            <ArrowLeft className="h-5 w-5" />
+            <span className="hidden sm:inline">Back to Map</span>
           </Link>
-          <h1 className="text-lg font-bold text-foreground">Settings</h1>
+          <div className="flex-1">
+            <h1 className="text-xl font-bold text-slate-900 leading-none">
+              Settings
+            </h1>
+            <p className="mt-1 text-xs font-medium text-slate-500">
+              Manage your application preferences
+            </p>
+          </div>
         </div>
       </div>
 
       {/* Settings groups */}
-      <div className="mx-auto max-w-2xl space-y-4 px-5 pt-2">
+      <div className="mx-auto max-w-4xl space-y-6 px-5 pt-6">
         {settingsGroups.map((group) => (
           <div key={group.title}>
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <p className="mb-2.5 ml-2 text-sm font-bold tracking-wide text-slate-500">
               {group.title}
             </p>
             <div className="overflow-hidden rounded-2xl bg-white shadow-card ring-1 ring-black/[0.04]">

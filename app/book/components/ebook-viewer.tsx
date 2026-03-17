@@ -75,11 +75,15 @@ export function EbookViewer({ page, currentIndex, totalPages, onNext, onPrev }: 
               )}
             </div>
             
-            {/* Date Rectangle */}
-            <div className="flex h-8 items-center justify-center rounded-md border border-slate-200 bg-transparent px-2">
-              <span className="text-[9px] font-medium text-slate-400">
-                {page.stamped ? page.stampDate : "Date :  "}
-              </span>
+            {/* Memo Input */}
+            <div className="flex h-12 flex-col justify-center border-t border-slate-200 bg-transparent px-3 transition-colors focus-within:border-brand focus-within:bg-brand/5">
+              <input 
+                type="text" 
+                defaultValue={page.stamped ? page.stampDate : ""}
+                placeholder="Tap to write a memo..."
+                className="w-full bg-transparent text-sm font-medium text-slate-700 outline-none placeholder:font-normal placeholder:text-slate-400"
+                maxLength={40}
+              />
             </div>
           </div>
         </div>

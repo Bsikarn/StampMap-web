@@ -1,12 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { Poppins } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 
-// Primary font: Poppins (modern, clean sans-serif per spec)
-const poppins = Poppins({
+// Primary font: Inter (highly popular minimal sans-serif)
+const inter = Inter({
   variable: "--font-sans",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -32,7 +31,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${poppins.variable} font-sans antialiased`}>
+      <body className={`${inter.variable} font-sans antialiased text-slate-800`}>
         {/* Main content area with mobile-first max width */}
         <div className="mx-auto min-h-dvh w-full">
           {children}
