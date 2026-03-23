@@ -15,6 +15,7 @@ import {
   ThumbsUp, Send, CheckCircle2, MessageCircle, Share2, MoreHorizontal, Image as ImageIcon
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 // Using Mock Data (ideally fetched from lib/mock-data.ts)
@@ -54,20 +55,48 @@ export default function LocationDetailPage() {
   const [reviewText, setReviewText] = useState("");
   const [likedIds, setLikedIds] = useState<number[]>([]);
   const [show3DModal, setShow3DModal] = useState(false);
+  
+  const router = useRouter();
+  const [dragY, setDragY] = useState(0);
+  const [startY, setStartY] = useState(0);
 
   const toggleLike = (id: number) =>
     setLikedIds((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setStartY(e.touches[0].clientY);
+  };
+  const handleTouchMove = (e: React.TouchEvent) => {
+    const currentY = e.touches[0].clientY;
+    const diff = currentY - startY;
+    if (diff > 0) {
+      setDragY(diff);
+    } else {
+      setDragY(diff * 0.2); // Resistance when pulling up
+    }
+  };
+  const handleTouchEnd = () => {
+    if (dragY > 120) {
+      router.back();
+    } else {
+      setDragY(0);
+    }
+  };
+
   return (
-    <div className="relative min-h-dvh bg-slate-100 pb-28">
+    <div 
+      className="relative min-h-dvh bg-transparent pb-28 text-slate-800"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      style={{ 
+        transform: `translateY(${dragY}px)`, 
+        transition: dragY === 0 ? 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)' : 'none' 
+      }}
+    >
       
       {/* Top Navigation */}
-      <div className="sticky top-0 z-40 flex items-center justify-between bg-white/80 px-5 py-4 backdrop-blur-md shadow-sm">
-        <Link href="/" className="flex items-center gap-2 text-sm font-semibold text-slate-700 hover:text-brand transition-colors">
-          <ArrowLeft className="h-5 w-5" />
-          <span className="hidden sm:inline">Back to Map</span>
-          <span className="inline sm:hidden">Back</span>
-        </Link>
+      <div className="sticky top-0 z-40 flex items-center justify-end bg-white/40 px-4 py-3 backdrop-blur-md shadow-sm">
         {locationData.collected && (
           <div className="flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 shadow-sm ring-1 ring-emerald-200">
             <CheckCircle2 className="h-4 w-4 text-emerald-600"/>
@@ -76,31 +105,18 @@ export default function LocationDetailPage() {
         )}
       </div>
 
-      <div className="mx-auto max-w-2xl px-4 py-6">
+      {/* Main card container overlapping from top */}
+      <div className="mx-auto max-w-2xl px-4 pt-8 sm:pt-10 md:pt-12 pb-6">
         
-        {/* Facebook-style Image Card */}
-        <div className="rounded-2xl bg-white shadow-card ring-1 ring-black/[0.04]">
-          {/* Post Header */}
-          <div className="flex items-center justify-between p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand/10 text-brand">
-                <MapPin className="h-5 w-5" />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-base font-bold text-slate-900 leading-none">{locationData.name}</span>
-                <span className="mt-1 flex items-center gap-1.5 text-xs font-medium text-slate-500">
-                  Jeju Official Spot • {locationData.distance} away
-                </span>
-              </div>
-            </div>
-            <button className="rounded-full p-2 text-slate-400 hover:bg-slate-50">
-              <MoreHorizontal className="h-5 w-5" />
-            </button>
-          </div>
+        {/* Tip pill for drag to close */}
+        <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-slate-300/80" />
 
-          {/* Post Image Placeholder */}
-          <div className="relative aspect-video w-full overflow-hidden bg-slate-50">
-            {/* The Mountain/Hero background from before, now contained inside the box */}
+        {/* Box that shows background outside, holds content inside */}
+        <div className="rounded-2xl bg-white shadow-card-lg ring-1 ring-black/[0.04] p-4 sm:p-6 mb-6">
+          
+          {/* Post Image Placeholder (Overlapping top edge) */}
+          <div className="relative -mt-10 sm:-mt-14 md:-mt-16 aspect-video w-full overflow-hidden rounded-2xl bg-slate-50 shadow-md">
+            {/* Background pattern inside image */}
             <div className="absolute inset-0 bg-gradient-to-br from-[#4FACFE] via-[#6EC6F5] to-[#A3D8F4]"/>
             <svg className="absolute bottom-0 w-full" viewBox="0 0 800 180" preserveAspectRatio="none">
               <path d="M0 180 L0 120 Q100 40 200 90 Q300 140 400 60 Q500 -10 600 70 Q700 130 800 50 L800 180Z" fill="white" opacity="0.12"/>
@@ -117,60 +133,65 @@ export default function LocationDetailPage() {
             {/* Pop-up trigger overlay */}
             <button 
               onClick={() => setShow3DModal(true)}
-              className="absolute bottom-4 right-4 flex items-center gap-2 rounded-xl bg-white/90 px-4 py-2 text-sm font-bold text-slate-800 shadow-md backdrop-blur-md transition-transform hover:scale-105 active:scale-95"
+              className="absolute bottom-4 right-4 flex items-center gap-2 rounded-xl bg-white/90 px-4 py-2 text-sm font-bold text-slate-800 shadow-lg backdrop-blur-md transition-transform hover:scale-105 active:scale-95"
             >
               <Layers className="h-4 w-4 text-brand" />
               3D View
             </button>
           </div>
 
-          {/* Post Actions (Like/Comment/Share style) */}
-          <div className="flex items-center justify-between border-t border-slate-100 p-2">
-            <button className="flex flex-1 items-center justify-center gap-2 rounded-lg py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50">
-              <Star className="h-5 w-5 text-amber-400 fill-amber-400" />
+          {/* Location Name & Distance */}
+          <div className="mt-5 flex flex-col items-center text-center">
+            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 leading-tight">
+              {locationData.name}
+            </h1>
+            <p className="mt-1.5 flex items-center justify-center gap-1.5 text-sm sm:text-base font-medium text-slate-500">
+              Jeju Official Spot • {locationData.distance} away
+            </p>
+          </div>
+
+          {/* Unified Action Buttons Row */}
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+            <button className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-slate-50 px-3 py-2.5 sm:px-4 sm:py-3 text-[13px] sm:text-sm font-semibold text-slate-700 shadow-sm ring-1 ring-black/[0.04] transition-colors hover:bg-slate-100">
+              <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
               {locationData.rating} ({locationData.reviewsCount})
             </button>
-            <button className="flex flex-1 items-center justify-center gap-2 rounded-lg py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50">
-              <MessageCircle className="h-5 w-5" />
-              Reviews
+            <button className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-slate-50 px-3 py-2.5 sm:px-4 sm:py-3 text-[13px] sm:text-sm font-semibold text-slate-700 shadow-sm ring-1 ring-black/[0.04] transition-colors hover:bg-slate-100">
+              <Bell className="h-4 w-4 text-brand" />
+              Alert
             </button>
-            <button className="flex flex-1 items-center justify-center gap-2 rounded-lg py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50">
-              <Share2 className="h-5 w-5" />
+            <button className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-slate-50 px-3 py-2.5 sm:px-4 sm:py-3 text-[13px] sm:text-sm font-semibold text-slate-700 shadow-sm ring-1 ring-black/[0.04] transition-colors hover:bg-slate-100">
+              <MapPin className="h-4 w-4 text-brand" />
+              Directions
+            </button>
+            <button className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-slate-50 px-3 py-2.5 sm:px-4 sm:py-3 text-[13px] sm:text-sm font-semibold text-slate-700 shadow-sm ring-1 ring-black/[0.04] transition-colors hover:bg-slate-100">
+              <Share2 className="h-4 w-4 text-slate-500" />
               Share
             </button>
           </div>
+
         </div>
 
-        {/* Action chips */}
-        <div className="mt-6 flex gap-3 overflow-x-auto pb-2 scrollbar-none">
-          <button className="flex shrink-0 items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-black/[0.04] transition-colors hover:bg-slate-50">
-            <Bell className="h-4 w-4 text-brand"/> Enable Alert
-          </button>
-          <button className="flex shrink-0 items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-black/[0.04] transition-colors hover:bg-slate-50">
-            <MapPin className="h-4 w-4 text-brand"/> Get Directions
-          </button>
-        </div>
-
-        {/* About Section */}
-        <section className="mt-6 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-black/[0.04]">
+        {/* About Section - Transparent */}
+        <section className="mt-4 px-2">
           <h2 className="text-lg font-bold text-slate-900">About this place</h2>
-          <p className="mt-3 text-sm leading-relaxed text-slate-600">
+          <p className="mt-2 text-sm leading-relaxed text-slate-700">
             {locationData.description}
           </p>
-          <div className="mt-4 flex items-center justify-between rounded-xl bg-slate-50 p-3 text-sm">
+          <div className="mt-3 flex items-center justify-between rounded-xl bg-white/20 p-3 text-sm backdrop-blur-sm shadow-sm ring-1 ring-slate-200/50">
             <span className="font-semibold text-slate-700">Opening Hours</span>
             <span className="font-medium text-brand">{locationData.openTime}</span>
           </div>
         </section>
 
-        {/* Reviews Section */}
-        <section className="mt-6">
+        {/* Reviews Section - Transparent */}
+        <section className="mt-6 px-2">
           <h2 className="mb-4 text-lg font-bold text-slate-900">Community Reviews</h2>
 
           {/* Write review */}
-          <div className="mb-6 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-black/[0.04]">
-            <p className="mb-3 text-sm font-bold text-slate-800">Share your experience</p>
-            <StarRating rating={userRating} size={28} interactive onRate={setUserRating}/>
+          <div className="mb-6 rounded-2xl bg-white/30 backdrop-blur-sm p-4 shadow-sm ring-1 ring-slate-200/50">
+            <p className="mb-2 text-sm font-bold text-slate-800">Share your experience</p>
+            <StarRating rating={userRating} size={24} interactive onRate={setUserRating}/>
             <Textarea
               placeholder="What did you think of this place?"
               value={reviewText}
@@ -186,9 +207,9 @@ export default function LocationDetailPage() {
           </div>
 
           {/* Review cards */}
-          <div className="space-y-4">
+          <div className="space-y-3">
             {reviews.map((r) => (
-              <div key={r.id} className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-black/[0.04]">
+              <div key={r.id} className="rounded-2xl bg-white/40 backdrop-blur-sm p-4 shadow-sm ring-1 ring-slate-200/50">
                 <div className="flex items-center gap-3">
                   <div className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold text-white shadow-sm ${r.avatarColor}`}>
                     {r.avatar}

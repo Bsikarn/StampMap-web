@@ -1,6 +1,5 @@
 "use client";
 
-import { BottomNav } from "@/components/bottom-nav";
 import { Separator } from "@/components/ui/separator";
 import {
   ArrowLeft,
@@ -195,22 +194,13 @@ export default function SettingsPage() {
   return (
     <div className="relative min-h-dvh bg-gray-50 pb-24">
       <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-md shadow-sm">
-        <div className="mx-auto flex items-center gap-4 px-5 py-4">
-          <Link
-            href="/"
-            className="flex items-center gap-2 text-sm font-semibold text-slate-700 hover:text-brand transition-colors"
-          >
-            <ArrowLeft className="h-5 w-5" />
-            <span className="hidden sm:inline">Back to Map</span>
-          </Link>
-          <div className="flex-1">
-            <h1 className="text-xl font-bold text-slate-900 leading-none">
-              Settings
-            </h1>
-            <p className="mt-1 text-xs font-medium text-slate-500">
-              Manage your application preferences
-            </p>
-          </div>
+        <div className="mx-auto flex w-full flex-col items-center justify-center px-4 py-3 text-center">
+          <h1 className="text-xl font-bold text-slate-900 leading-none">
+            Settings
+          </h1>
+          <p className="mt-1.5 text-xs font-medium text-slate-500">
+            Manage your application preferences
+          </p>
         </div>
       </div>
 
@@ -275,8 +265,6 @@ export default function SettingsPage() {
           StampMap v1.0.0 • Made with ❤️
         </p>
       </div>
-
-      <BottomNav />
     </div>
   );
 }

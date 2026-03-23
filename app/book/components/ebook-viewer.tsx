@@ -1,4 +1,5 @@
 import { ChevronLeft, ChevronRight, Image as ImageIcon } from "lucide-react";
+import { useState } from "react";
 
 interface StampPageData {
   id: string;
@@ -20,27 +21,38 @@ interface EbookViewerProps {
 }
 
 export function EbookViewer({ page, currentIndex, totalPages, onNext, onPrev }: EbookViewerProps) {
+  // Store page-specific memos inside a dictionary (page.id -> memoString)
+  const [memos, setMemos] = useState<Record<string, string>>({});
+
+  const currentMemo = memos[page.id] !== undefined 
+      ? memos[page.id] 
+      : (page.stamped ? page.stampDate : "");
+
+  const handleMemoChange = (val: string) => {
+    setMemos(prev => ({ ...prev, [page.id]: val }));
+  };
+
   return (
     <div className="flex w-full flex-col items-center pb-8 animate-stamp-fade-in">
       {/* Main Page Card */}
-      <div className="w-full max-w-sm rounded-[24px] border-[3px] border-brand bg-white p-5 shadow-card-lg">
+      <div className="w-full max-w-[480px] rounded-2xl border-[3px] border-brand bg-white p-6 sm:p-8 shadow-card-lg">
         {/* Header - Title & Subtitle */}
         <div className="flex items-end justify-between px-1">
-          <h2 className="text-xl font-bold tracking-tight text-slate-900">{page.locationName}</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">{page.locationName}</h2>
           {page.koreanName && (
-            <span className="text-sm font-medium text-amber-600">{page.koreanName}</span>
+            <span className="text-sm border-b border-transparent sm:text-base font-medium text-amber-600">{page.koreanName}</span>
           )}
         </div>
         
         {/* Separator Line */}
-        <div className="my-3 h-[2px] w-full bg-slate-800" />
+        <div className="my-4 h-[2px] w-full bg-slate-800" />
         
         {/* Landscape Image Placeholder */}
-        <div className="relative mb-4 flex h-40 w-full items-center justify-center overflow-hidden rounded-md bg-slate-100 ring-1 ring-slate-200">
+        <div className="relative mb-5 flex h-52 w-full items-center justify-center overflow-hidden rounded-lg bg-slate-100 ring-1 ring-slate-200">
           {page.imageFallback ? (
             <div className="flex flex-col items-center text-slate-400">
-              <ImageIcon className="h-8 w-8 mb-2" />
-              <span className="text-xs font-medium">Image Placeholder</span>
+              <ImageIcon className="h-10 w-10 mb-2" />
+              <span className="text-sm font-medium">Image Placeholder</span>
             </div>
           ) : (
             <div className="absolute inset-0 bg-gradient-to-br from-slate-200 to-slate-300" />
@@ -48,30 +60,30 @@ export function EbookViewer({ page, currentIndex, totalPages, onNext, onPrev }: 
         </div>
         
         {/* 2-Column Content */}
-        <div className="flex items-start gap-4">
+        <div className="flex items-start gap-5">
           {/* Left: Description */}
-          <div className="flex-[3] text-[11px] leading-relaxed text-slate-700">
+          <div className="flex-[3] text-xs sm:text-sm leading-relaxed text-slate-700">
             {page.description}
           </div>
           
           {/* Right: Stamp & Date Fields */}
-          <div className="flex flex-[2] flex-col gap-2">
+          <div className="flex flex-[2] flex-col gap-3">
             {/* Stamp Square */}
-            <div className={`flex aspect-square items-center justify-center rounded-lg border-2 ${page.stamped ? "border-amber-200 bg-amber-50" : "border-slate-200 bg-slate-50"}`}>
+            <div className={`flex aspect-square items-center justify-center rounded-xl border-2 ${page.stamped ? "border-amber-200 bg-amber-50" : "border-slate-200 bg-slate-50"}`}>
               {page.stamped ? (
                 page.stampImage ? (
-                  <div className="relative h-16 w-16">
+                  <div className="relative h-20 w-20 sm:h-24 sm:w-24">
                      {/* Simulated Stamp Graphics */}
                      <div className="absolute inset-0 rounded-full border border-amber-500/30" />
                      <div className="absolute inset-2 rounded-full border border-amber-500/20" />
-                     <div className="absolute inset-x-2 top-1/2 h-4 -translate-y-1/2 bg-amber-500/10" />
-                     <span className="absolute inset-0 flex items-center justify-center text-[8px] font-bold text-amber-600 whitespace-nowrap -rotate-12">STAMPED</span>
+                     <div className="absolute inset-x-2 top-1/2 h-5 -translate-y-1/2 bg-amber-500/10" />
+                     <span className="absolute inset-0 flex items-center justify-center text-[10px] sm:text-xs font-bold text-amber-600 whitespace-nowrap -rotate-12">STAMPED</span>
                   </div>
                 ) : (
-                   <span className="text-[10px] font-bold text-amber-600">STAMPED</span>
+                   <span className="text-xs sm:text-sm font-bold text-amber-600">STAMPED</span>
                 )
               ) : (
-                <span className="text-[10px] font-medium text-slate-300">No stamp</span>
+                <span className="text-xs sm:text-sm font-medium text-slate-300">No stamp</span>
               )}
             </div>
             
@@ -79,7 +91,8 @@ export function EbookViewer({ page, currentIndex, totalPages, onNext, onPrev }: 
             <div className="flex h-12 flex-col justify-center border-t border-slate-200 bg-transparent px-3 transition-colors focus-within:border-brand focus-within:bg-brand/5">
               <input 
                 type="text" 
-                defaultValue={page.stamped ? page.stampDate : ""}
+                value={currentMemo}
+                onChange={(e) => handleMemoChange(e.target.value)}
                 placeholder="Tap to write a memo..."
                 className="w-full bg-transparent text-sm font-medium text-slate-700 outline-none placeholder:font-normal placeholder:text-slate-400"
                 maxLength={40}
@@ -90,19 +103,19 @@ export function EbookViewer({ page, currentIndex, totalPages, onNext, onPrev }: 
       </div>
 
       {/* Navigation Pills */}
-      <div className="mt-6 flex items-center justify-center gap-3">
+      <div className="mt-8 flex items-center justify-center gap-4">
         {/* Previous */}
         <button
           onClick={onPrev}
           disabled={currentIndex === 0}
-          className="flex h-9 items-center rounded-full border-2 border-brand bg-white px-4 text-xs font-bold text-brand shadow-sm transition-all hover:bg-slate-50 disabled:opacity-40"
+          className="flex h-11 items-center rounded-full border-2 border-brand bg-white px-5 text-sm font-bold text-brand shadow-sm transition-all hover:bg-slate-50 disabled:opacity-40"
         >
-          <ChevronLeft className="mr-1 h-4 w-4" />
+          <ChevronLeft className="mr-1.5 h-5 w-5" />
           Previous
         </button>
 
         {/* Page Indicator */}
-        <div className="flex h-9 items-center rounded-full border-2 border-brand bg-white px-4 text-xs font-bold text-brand shadow-sm">
+        <div className="flex h-11 items-center rounded-full border-2 border-brand bg-white px-5 text-sm font-bold text-brand shadow-sm">
           Page {currentIndex + 1} of {totalPages}
         </div>
 
@@ -110,10 +123,10 @@ export function EbookViewer({ page, currentIndex, totalPages, onNext, onPrev }: 
         <button
           onClick={onNext}
           disabled={currentIndex === totalPages - 1}
-          className="flex h-9 items-center rounded-full border-2 border-brand bg-white px-4 text-xs font-bold text-brand shadow-sm transition-all hover:bg-slate-50 disabled:opacity-40"
+          className="flex h-11 items-center rounded-full border-2 border-brand bg-white px-5 text-sm font-bold text-brand shadow-sm transition-all hover:bg-slate-50 disabled:opacity-40"
         >
           Next
-          <ChevronRight className="ml-1 h-4 w-4" />
+          <ChevronRight className="ml-1.5 h-5 w-5" />
         </button>
       </div>
     </div>

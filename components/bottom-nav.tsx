@@ -38,14 +38,20 @@ export function BottomNav() {
                 key={item.id}
                 href={item.href}
                 aria-label="Map"
+                onClick={(e) => {
+                  if (active) {
+                    e.preventDefault();
+                    window.location.href = item.href;
+                  }
+                }}
                 className={`
-                  flex h-11 w-11 items-center justify-center rounded-xl transition-all duration-200
+                  flex h-11 w-11 sm:h-12 sm:w-12 md:h-14 md:w-14 items-center justify-center rounded-xl transition-all duration-200
                   ${active
                     ? "bg-brand text-white shadow-card"
                     : "bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-slate-600"}
                 `}
               >
-                <item.icon className="h-5 w-5" strokeWidth={active ? 2.5 : 1.8} />
+                <item.icon className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7" strokeWidth={active ? 2.5 : 1.8} />
               </Link>
             );
           }
@@ -54,15 +60,21 @@ export function BottomNav() {
             <Link
               key={item.id}
               href={item.href}
+              onClick={(e) => {
+                if (active) {
+                  e.preventDefault();
+                  window.location.href = item.href;
+                }
+              }}
               className={`
-                flex flex-col items-center gap-0.5 rounded-xl px-3 py-2 transition-all duration-200
+                flex flex-col items-center gap-0.5 sm:gap-1 rounded-xl px-3 py-2 sm:px-4 sm:py-3 md:px-5 transition-all duration-200
                 ${active
                   ? "text-brand"
                   : "text-slate-400 hover:text-slate-600"}
               `}
             >
-              <item.icon className="h-5 w-5" strokeWidth={active ? 2.5 : 1.8} />
-              <span className={`text-[10px] font-medium transition-all ${active ? "opacity-100" : "opacity-70"}`}>
+              <item.icon className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7" strokeWidth={active ? 2.5 : 1.8} />
+              <span className={`text-[10px] sm:text-xs md:text-sm font-medium transition-all ${active ? "opacity-100" : "opacity-70"}`}>
                 {item.label}
               </span>
             </Link>

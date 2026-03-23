@@ -85,28 +85,13 @@ export default function SouvenirPage() {
     <div className="relative min-h-dvh bg-slate-50 pb-24">
       {/* Header */}
       <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-md shadow-sm">
-        <div className="mx-auto flex items-center gap-4 px-5 py-4">
-          <Link
-            href="/"
-            className="flex items-center gap-2 text-sm font-semibold text-slate-700 hover:text-brand transition-colors"
-          >
-            <ArrowLeft className="h-5 w-5" />
-            <span className="hidden sm:inline">Back to Map</span>
-          </Link>
-          <div className="flex-1">
-            <h1 className="text-xl font-bold text-slate-900 leading-none">
-              Souvenir Exchange
-            </h1>
-            <p className="mt-1 text-xs font-medium text-slate-500">
-              Redeem stamps for souvenirs
-            </p>
-          </div>
-          <div className="flex items-center gap-1.5 rounded-full bg-brand/10 px-3 py-1.5 ring-1 ring-brand/20">
-            <Package className="h-4 w-4 text-brand" />
-            <span className="text-xs font-bold text-brand">
-              {souvenirItems.filter((s) => s.inStock).length} available
-            </span>
-          </div>
+        <div className="mx-auto flex w-full flex-col items-center justify-center px-4 py-3 text-center">
+          <h1 className="text-xl font-bold text-slate-900 leading-none">
+            Souvenir Exchange
+          </h1>
+          <p className="mt-1.5 text-xs font-medium text-slate-500">
+            Trade your stamps for exclusive rewards
+          </p>
         </div>
       </div>
 
@@ -121,11 +106,10 @@ export default function SouvenirPage() {
             <div className="relative flex aspect-square items-center justify-center bg-slate-50">
               <span className="text-5xl transition-transform duration-200 group-hover:scale-110">{item.image}</span>
               {/* Stock badge */}
-              <span className={`absolute right-2 top-2 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-                item.inStock
-                  ? "bg-emerald-100 text-emerald-700"
-                  : "bg-slate-100 text-slate-500"
-              }`}>
+              <span className={`absolute right-2 top-2 rounded-full px-2 py-0.5 text-[10px] font-semibold ${item.inStock
+                ? "bg-emerald-100 text-emerald-700"
+                : "bg-slate-100 text-slate-500"
+                }`}>
                 {item.inStock ? "In stock" : "Sold out"}
               </span>
             </div>
@@ -225,8 +209,6 @@ export default function SouvenirPage() {
           </div>
         </DialogContent>
       </Dialog>
-
-      <BottomNav />
     </div>
   );
 }

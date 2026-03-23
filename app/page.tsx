@@ -127,17 +127,17 @@ export default function HomePage() {
           <button
             id="map-selector-btn"
             onClick={() => setIsMapSelectorOpen(!isMapSelectorOpen)}
-            className="glass flex items-center gap-3 rounded-2xl px-5 py-3 text-base font-bold text-slate-800 shadow-card transition-all hover:shadow-card-md active:scale-95"
+            className="glass flex items-center gap-2.5 sm:gap-3 rounded-xl px-4 py-2 sm:px-5 sm:py-2.5 md:px-6 md:py-3 text-sm sm:text-base md:text-lg font-bold text-slate-800 shadow-card transition-all hover:shadow-card-md active:scale-95"
           >
-            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand text-[13px] font-bold text-white shadow-sm">
+            <span className="flex h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 items-center justify-center rounded-full bg-brand text-[11px] sm:text-[13px] md:text-sm font-bold text-white shadow-sm">
               ✦
             </span>
-            <span className="max-w-[150px] truncate">{selectedMap.name}</span>
-            <ChevronDown className={`h-5 w-5 text-slate-500 transition-transform duration-300 ${isMapSelectorOpen ? "rotate-180" : ""}`}/>
+            <span className="max-w-[130px] sm:max-w-[180px] md:max-w-[220px] truncate">{selectedMap.name}</span>
+            <ChevronDown className={`h-4 w-4 sm:h-5 sm:w-5 transition-transform duration-300 ${isMapSelectorOpen ? "rotate-180" : ""}`}/>
           </button>
 
           {isMapSelectorOpen && (
-            <div className="absolute left-0 top-full z-50 mt-3 w-72 origin-top-left animate-stamp-fade-in overflow-hidden rounded-[24px] bg-white shadow-card-lg ring-1 ring-black/[0.04]">
+            <div className="absolute left-0 top-full z-50 mt-2 w-64 origin-top-left animate-stamp-fade-in overflow-hidden rounded-2xl bg-white shadow-card-lg ring-1 ring-black/[0.04]">
               <div className="px-3 pb-1.5 pt-3">
                 <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Select map</p>
               </div>
@@ -171,58 +171,59 @@ export default function HomePage() {
         {/* IN/OUT toggle — pinned right */}
         <button
           onClick={handleToggle}
-          className={`flex items-center gap-2.5 rounded-2xl px-5 py-3 text-base font-bold shadow-card transition-all duration-300 active:scale-95 ${
+          className={`flex items-center gap-2 sm:gap-2.5 rounded-xl px-4 py-2 sm:px-5 sm:py-2.5 md:px-6 md:py-3 text-sm sm:text-base md:text-lg font-bold shadow-card transition-all duration-300 active:scale-95 ${
             isLocationOn
               ? "bg-brand text-white shadow-card-md"
               : "glass text-slate-600 hover:text-slate-800"
           }`}
         >
           {isLocationOn
-            ? <><LocateFixed className="h-5 w-5"/><span>IN</span></>
-            : <><LocateOff   className="h-5 w-5"/><span>OUT</span></>
+            ? <><LocateFixed className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6"/><span>IN</span></>
+            : <><LocateOff   className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6"/><span>OUT</span></>
           }
         </button>
       </div>
 
-      {/* ── Proximity toast — centered on screen ── */}
+      {/* ── Proximity toast — top center compact ── */}
       {showNotification && (
-        <div className="animate-toast-in fixed left-1/2 top-1/2 z-50 w-[calc(100%-3rem)] max-w-md -translate-x-1/2 -translate-y-1/2">
-          <div className="glass flex flex-col items-center gap-5 rounded-[28px] p-8 text-center shadow-card-lg ring-1 ring-black/[0.06]">
-            {/* Success Icon */}
-            <div className="relative mb-3">
-              <div className="absolute -inset-4 animate-ping rounded-full bg-brand/20" style={{ animationDuration: "2s" }}/>
-              <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-brand text-white shadow-md">
-                <Bell className="h-10 w-10" />
-              </div>
+        <div className="animate-toast-in fixed left-0 right-0 mx-auto top-4 sm:top-6 md:top-8 z-50 w-full max-w-sm px-4">
+          <div className="glass relative flex items-center gap-3 sm:gap-4 rounded-xl p-3 sm:p-4 shadow-card-lg ring-1 ring-black/[0.06]">
+            
+            {/* Icon */}
+            <div className="relative shrink-0">
+               <div className="absolute -inset-2 animate-ping rounded-full bg-brand/20" style={{ animationDuration: "2s" }}/>
+               <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-brand text-white shadow-md">
+                 <Bell className="h-5 w-5" />
+               </div>
             </div>
             
             {/* Text */}
-            <div className="min-w-0">
-              <p className="text-3xl font-bold text-slate-900 tracking-tight">Location Nearby!</p>
-              <p className="mt-3 text-lg text-slate-600">You are within 120m of <span className="font-semibold text-brand">Cheonjiyeon Falls</span>.</p>
-              <p className="mt-2 text-sm text-slate-400">Collect your stamp now!</p>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm sm:text-base font-bold text-slate-900 tracking-tight leading-none mb-1">Location Nearby!</p>
+              <p className="truncate text-xs sm:text-sm text-slate-600">Near <span className="font-semibold text-brand">Cheonjiyeon Falls</span></p>
             </div>
             
             {/* Actions */}
-            <div className="mt-4 flex w-full gap-4">
-              <button 
-                onClick={() => setShowNotification(false)} 
-                className="flex-1 rounded-[16px] border-2 border-slate-200 bg-white py-4 text-base font-semibold text-slate-600 transition-colors hover:bg-slate-50"
-              >
-                Dismiss
-              </button>
-              <Link
-                href="/location/4"
-                className="flex-1 flex items-center justify-center rounded-[16px] bg-brand py-4 text-base font-bold text-white shadow-md transition-all hover:bg-blue-700 active:scale-95"
-              >
-                Collect Stamp
-              </Link>
-            </div>
+            <Link
+              href="/location/4"
+              className="shrink-0 rounded-xl bg-brand px-4 py-2 sm:px-5 sm:py-2.5 text-xs sm:text-sm font-bold text-white shadow-sm transition-all hover:bg-blue-700 active:scale-95"
+            >
+              Collect
+            </Link>
+
+            {/* Close button */}
+            <button 
+              onClick={() => setShowNotification(false)}
+              className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-white text-slate-400 shadow-sm ring-1 ring-black/5 hover:text-slate-600"
+            >
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 3L3 9M3 3L9 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
           </div>
         </div>
       )}
 
-      <BottomNav />
     </div>
   );
 }

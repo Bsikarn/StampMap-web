@@ -62,7 +62,7 @@ export function BookPageModals({
     <>
       {/* Change Book Modal */}
       <Dialog open={showChangeBook} onOpenChange={setShowChangeBook}>
-        <DialogContent className="mx-auto max-w-sm rounded-[24px]">
+        <DialogContent className="mx-auto max-w-sm rounded-2xl">
           <DialogHeader>
             <DialogTitle className="text-lg">Select Stamp Book</DialogTitle>
             <DialogDescription className="text-sm">
@@ -117,7 +117,7 @@ export function BookPageModals({
 
       {/* Add New Book Modal */}
       <Dialog open={showAddBook} onOpenChange={setShowAddBook}>
-        <DialogContent className="mx-auto max-w-sm rounded-[24px]">
+        <DialogContent className="mx-auto max-w-sm rounded-2xl">
           <DialogHeader>
             <DialogTitle className="text-lg">Add New Book</DialogTitle>
             <DialogDescription className="text-sm">
@@ -157,7 +157,7 @@ export function BookPageModals({
 
       {/* NFC Scan Modal */}
       <Dialog open={showNfcModal} onOpenChange={setShowNfcModal}>
-        <DialogContent className="mx-auto max-w-xs rounded-[24px]">
+        <DialogContent className="mx-auto max-w-xs rounded-2xl">
           <DialogHeader>
             <DialogTitle className="text-center text-lg">Scanning NFC...</DialogTitle>
             <DialogDescription className="text-center text-sm">
@@ -176,7 +176,7 @@ export function BookPageModals({
 
       {/* Success Modal */}
       <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
-        <DialogContent className="mx-auto max-w-xs rounded-[24px]">
+        <DialogContent className="mx-auto max-w-xs rounded-2xl">
           <DialogHeader>
             <DialogTitle className="text-center text-lg">Stamp Collected! 🎉</DialogTitle>
             <DialogDescription className="text-center text-sm">

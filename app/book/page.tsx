@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Volume2, Plus } from "lucide-react";
-import { BottomNav } from "@/components/bottom-nav";
 import { useStampStore } from "@/store/use-stamp-store";
 import { Button } from "@/components/ui/button";
 
@@ -81,26 +80,7 @@ export default function StampBookPage() {
     <div className="relative min-h-dvh bg-[#E3F2FD] pb-24 selection:bg-brand/20">
       {/* Top Header */}
       <div className="sticky top-0 z-40 bg-[#E3F2FD]/80 backdrop-blur-md shadow-sm">
-        <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-5 py-4">
-          {showEbook ? (
-            <button
-              onClick={() => setShowEbook(false)}
-              className="flex items-center gap-2 text-sm font-semibold text-slate-700 hover:text-brand transition-colors"
-            >
-              <ArrowLeft className="h-5 w-5" />
-              <span className="hidden sm:inline">Back to Book</span>
-              <span className="inline sm:hidden">Back</span>
-            </button>
-          ) : (
-            <Link
-              href="/"
-              className="flex items-center gap-2 text-sm font-semibold text-slate-700 hover:text-brand transition-colors"
-            >
-              <ArrowLeft className="h-5 w-5" />
-              <span className="hidden sm:inline">Back to Map</span>
-              <span className="inline sm:hidden">Back</span>
-            </Link>
-          )}
+        <div className="mx-auto flex w-full max-w-5xl items-center justify-end px-4 py-3">
 
           {/* Action Button (e.g. Sound/Collect) */}
           {!showEbook && (
@@ -109,10 +89,9 @@ export default function StampBookPage() {
                  setShowNfcModal(true);
                  setTimeout(() => { setShowNfcModal(false); setShowSuccessModal(true); }, 2000);
               }}
-              className="flex items-center gap-1.5 rounded-xl bg-brand/10 px-3 py-1.5 text-xs font-bold text-brand ring-1 ring-brand/20 transition-all hover:bg-brand/20 active:scale-95"
+              className="flex items-center justify-center rounded-xl bg-brand/10 px-4 py-2 text-xs font-bold text-brand ring-1 ring-brand/20 transition-all hover:bg-brand/20 active:scale-95"
             >
-              <Volume2 className="h-4 w-4" />
-              Scan NFC
+              NFC
             </button>
           )}
         </div>
@@ -174,8 +153,6 @@ export default function StampBookPage() {
         stampBooks={stampBooks}
         availableCountries={availableCountries}
       />
-
-      <BottomNav />
     </div>
   );
 }

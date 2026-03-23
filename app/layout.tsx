@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { BottomNav } from "@/components/bottom-nav";
 
 // Primary font: Inter (highly popular minimal sans-serif)
 const inter = Inter({
@@ -35,6 +36,7 @@ export default function RootLayout({
         {/* Main content area with mobile-first max width */}
         <div className="mx-auto min-h-dvh w-full">
           {children}
+          <BottomNav />
         </div>
       </body>
     </html>

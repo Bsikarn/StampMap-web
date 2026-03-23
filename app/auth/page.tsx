@@ -21,14 +21,6 @@ export default function AuthPage() {
         <div className="absolute bottom-0 right-0 h-48 w-48 rounded-full bg-violet-100/50 blur-3xl"/>
       </div>
 
-      {/* Back button */}
-      <Link
-        href="/"
-        className="absolute left-4 top-4 flex h-10 w-10 items-center justify-center rounded-xl bg-white shadow-card ring-1 ring-black/[0.04] transition-shadow hover:shadow-card-md"
-      >
-        <ArrowLeft className="h-4 w-4 text-slate-700"/>
-      </Link>
-
       {/* Logo */}
       <div className="relative mb-8 text-center">
         <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-brand shadow-card-md">
@@ -39,7 +31,7 @@ export default function AuthPage() {
       </div>
 
       {/* Card */}
-      <div className="relative w-full max-w-sm rounded-3xl bg-white p-6 shadow-card-lg ring-1 ring-black/[0.04]">
+      <div className="relative w-full max-w-sm rounded-2xl bg-white p-6 shadow-card-lg ring-1 ring-black/[0.04]">
 
         {/* Tabs */}
         <div className="flex rounded-xl bg-slate-100 p-1">
