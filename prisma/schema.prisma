@@ -1,0 +1,59 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String           @id @default(uuid())
+  email           String           @unique
+  name            String?
+  collectedStamps CollectedStamp[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+}
+
+model Zone {
+  id              String           @id @default(uuid())
+  name            String           // e.g., "Hallasan National Park"
+  centerLat       Float            // Center point latitude for Zoom
+  centerLng       Float            // Center point longitude for Zoom
+  boundary        Json             // GeoJSON Polygon data defining the zone
+  locations       Location[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+}
+
+model Location {
+  id              String           @id @default(uuid())
+  name            String           // e.g., "Jeongbang Waterfall"
+  description     String?
+  latitude        Float
+  longitude       Float
+  category        Category         // Enum: CULTURAL or NATURE
+  zoneId          String
+  zone            Zone             @relation(fields: [zoneId], references: [id])
+  collectedStamps CollectedStamp[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+}
+
+model CollectedStamp {
+  id              String   @id @default(uuid())
+  userId          String
+  locationId      String
+  user            User     @relation(fields: [userId], references: [id])
+  location        Location @relation(fields: [locationId], references: [id])
+  collectedAt     DateTime @default(now())
+
+  @@unique([userId, locationId]) // A user can only collect a stamp once per location
+}
+
+enum Category {
+  CULTURAL
+  NATURE
+}

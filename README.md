@@ -1,64 +1,42 @@
-# StampMap Web
+# Un-Old-Jeju (StampMap)
 
-A premium, mobile-first interactive stamp collection map application. Explore locations, collect stamps via NFC, manage your stamp passport books, and exchange stamps for exclusive souvenirs.
+An interactive, mobile-first stamp collection map application designed to gamify real-world exploration on Jeju Island. 
 
-## Tech Stack
+## 🏗️ Technology Stack
 
-### Languages
-- TypeScript
-- CSS (Tailwind CSS v4)
+**Core Frameworks & Languages**
+- **Framework:** Next.js 14+ (App Router)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS + shadcn/ui
 
-### Frontend
-- Next.js 16 (App Router)
-- React 19
-- Tailwind CSS v4 with custom design tokens
-- shadcn/ui (Button, Card, Dialog, Input, Select, Badge, Tabs, Switch, Progress, Textarea, Popover, Separator)
-- Poppins font (Google Fonts via `next/font`)
+**Database & State Management**
+- **State Management:** Zustand (Immutable global stores)
+- **Database/ORM:** PostgreSQL + Prisma ORM
+- **Map Engine:** Mapbox GL JS (`react-map-gl`)
 
-### State Management
-- Zustand v5
+**UI Features**
+- **Icons:** Lucide React
+- **Animations:** Custom CSS Tailwind Animations (`animate-stamp-slide-up`, `fade-in`, `slide-in-from-right`)
 
-### Icons
-- Lucide React
+## 🚀 Active Features
 
-### Build Tools
-- PostCSS
-- ESLint
+- **Interactive Map Dashboard:** Region selection with floating notifications for nearby collectible locations.
+- **Location Discovery:** Route-intercepting modals (`@modal`) allow users to read rich location data without losing their map viewport.
+- **Stamp Book Collection:** A visual progress tracker of collected stamps mimicking a physical passport.
+- **Souvenir Exchange Hub:** Users can redeem collected stamps for physical items by inputting their passport ID.
+- **Settings & User Preferences:** Mock options for account controls, notifications, and location tracking configs.
+- **Fluid Gesture & Routing UI:** Slide-in animations between nav tabs, and bounce-to-dismiss drag gestures.
 
-## Features
+## 📁 Directory Structure Breakdown
 
-- **Splash Screen** — Branded loading screen with pulse animation and auto-redirect
-- **Interactive Map View** — Static mockup map with SVG pins (collected/uncollected), proximity notification, map selector dropdown (Jeju, Taiwan, Japan, Thailand, Singapore)
-- **Location Details** — Hero image with 3D View button, history section, star ratings, review system with write-a-review form
-- **Stamp Book** — Progress tracker with progress bar, passport visualization, stamp detail carousel, NFC scan simulation, success modal
-- **Souvenir Exchange** — 2-column product grid with stock badges, stamp exchange modal with passport book selection
-- **Authentication** — Login/Sign Up segmented tabs, form inputs with icons, social login (Google, Facebook, Apple)
-- **Settings** — Grouped setting sections (Account, Notifications, Location, Privacy, About) with iOS-style toggle switches
-- **Bottom Navigation** — Floating nav bar with map selector center button
-
-## Directory Structure
-
-```
-stampmap_web/
-├── app/
-│   ├── globals.css          # Design system (custom colors, shadows, animations)
-│   ├── layout.tsx           # Root layout (Poppins font, mobile viewport)
-│   ├── page.tsx             # Screen 2: Main Map View (Home)
-│   ├── splash/page.tsx      # Screen 1: Splash/Loading
-│   ├── location/[id]/page.tsx  # Screen 3: Location Details & Reviews
-│   ├── book/page.tsx        # Screen 4: Stamp Book
-│   ├── souvenir/page.tsx    # Screen 5: Souvenir Exchange
-│   ├── auth/page.tsx        # Screen 6: Authentication
-│   └── settings/page.tsx    # Screen 7: Settings
-├── components/
-│   ├── bottom-nav.tsx       # Bottom navigation bar with map selector
-│   └── ui/                  # shadcn/ui components (DO NOT TOUCH)
-├── store/
-│   └── use-stamp-store.ts   # Zustand global state (stamps, maps, tabs)
-├── lib/
-│   └── utils.ts             # Utility functions (cn helper)
-├── docs/private/            # Private documentation (Thai)
-└── public/                  # Static assets
-```
-
-> **DO NOT TOUCH**: `components/ui/` — These are auto-generated shadcn/ui components. Do not manually edit them. Use `npx shadcn@latest add <component>` to add new ones.
+- `/app`: Contains all Next.js App Router endpoints.
+  - `/app/@modal`: Parallel route intercepting `/location/[id]` to display as a modal.
+  - `/app/location/[id]`: The standalone detail page (fallback on hard refresh).
+- `/components`: Global reusable UI components (Buttons, Modals).
+  - `/components/location`: Abstracted star ratings and reviews.
+  - `/components/map`: Logic for rendering SVG background and interactive map pins.
+  - `/components/settings`: Settings group logic.
+  - `/components/souvenir`: Grid item cards and exchange flow modals.
+- `/docs`: Project guidelines, setup instructions, and the private knowledge base. **[DO NOT TOUCH / READ ONLY]**
+- `/lib`: Helper functions and mock data models (e.g., `mock-data.ts`).
+- `/store`: Zustand global state models.

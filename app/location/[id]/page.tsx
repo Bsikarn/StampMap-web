@@ -16,103 +16,116 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
-// Using Mock Data (ideally fetched from lib/mock-data.ts)
-const locationData = {
-  id: "1",
-  name: "Geumryongsa Temple",
-  koreanName: "금룡사",
-  description: "A natural temple on Jeju Island featuring a harmonious landscape formed by rocky outcrops and pine trees. Known for the legend of the blue and yellow dragons.",
-  rating: 4.8,
-  reviewsCount: 124,
-  distance: "2.4 km",
-  openTime: "06:00 AM - 06:00 PM",
-  collected: true,
-};
+import { locationData, locationReviews as reviews, type ReviewData } from "@/lib/mock-data";
+import { StarRating } from "@/components/location/star-rating";
 
-const reviews = [
-  { id: 1, user: "Alice K.", avatar: "AK", avatarColor: "bg-violet-500", rating: 5, date: "2 days ago", comment: "Absolutely breathtaking views! The hike was totally worth it.", likes: 12 },
-  { id: 2, user: "Taro M.", avatar: "TM", avatarColor: "bg-emerald-500", rating: 4, date: "1 week ago", comment: "Beautiful scenery and well-maintained trails.", likes: 8 },
-];
-
-function StarRating({ rating, size = 16, interactive = false, onRate }: any) {
-  return (
-    <div className="flex gap-0.5">
-      {[1, 2, 3, 4, 5].map((n) => (
-        <button key={n} disabled={!interactive} onClick={() => onRate?.(n)}
-          className={interactive ? "cursor-pointer" : "cursor-default"}>
-          <Star size={size}
-            className={n <= rating ? "fill-amber-400 text-amber-400" : "fill-transparent text-slate-200"}/>
-        </button>
-      ))}
-    </div>
-  );
-}
-
-export default function LocationDetailPage() {
+export default function LocationDetailPage({ params }: { params: { id: string } }) {
   const [userRating, setUserRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
   const [likedIds, setLikedIds] = useState<number[]>([]);
   const [show3DModal, setShow3DModal] = useState(false);
   
   const router = useRouter();
+  const scrollRef = useRef<HTMLDivElement>(null);
+
   const [dragY, setDragY] = useState(0);
   const [startY, setStartY] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  // Trigger entrance slide-up on mount
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(frame);
+  }, []);
+
+  const handleClose = () => {
+    if (isClosing) return;
+    setIsClosing(true);
+    setTimeout(() => {
+      router.back();
+    }, 400); // Matches the exit transition duration
+  };
 
   const toggleLike = (id: number) =>
     setLikedIds((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
 
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setStartY(e.touches[0].clientY);
+  const handleTouchStart = (e: React.TouchEvent | React.MouseEvent) => {
+    if (scrollRef.current && scrollRef.current.scrollTop > 5) return;
+    setIsDragging(true);
+    setStartY('touches' in e ? e.touches[0].clientY : e.clientY);
   };
-  const handleTouchMove = (e: React.TouchEvent) => {
-    const currentY = e.touches[0].clientY;
+
+  const handleTouchMove = (e: React.TouchEvent | React.MouseEvent) => {
+    if (!isDragging) return;
+    const currentY = 'touches' in e ? e.touches[0].clientY : e.clientY;
     const diff = currentY - startY;
+    
+    // Only apply drag transform if pulling downwards
     if (diff > 0) {
       setDragY(diff);
     } else {
-      setDragY(diff * 0.2); // Resistance when pulling up
-    }
-  };
-  const handleTouchEnd = () => {
-    if (dragY > 120) {
-      router.back();
-    } else {
+      setIsDragging(false); 
       setDragY(0);
     }
   };
 
+  const handleTouchEnd = () => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    
+    if (dragY > 180) {
+      handleClose();
+    } else {
+      setDragY(0); // Snap back reliably
+    }
+  };
+
   return (
-    <div 
-      className="relative min-h-dvh bg-transparent pb-28 text-slate-800"
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-      style={{ 
-        transform: `translateY(${dragY}px)`, 
-        transition: dragY === 0 ? 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)' : 'none' 
-      }}
-    >
+    <div className="relative min-h-dvh overflow-hidden bg-slate-50">
       
-      {/* Top Navigation */}
-      <div className="sticky top-0 z-40 flex items-center justify-end bg-white/40 px-4 py-3 backdrop-blur-md shadow-sm">
-        {locationData.collected && (
-          <div className="flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 shadow-sm ring-1 ring-emerald-200">
-            <CheckCircle2 className="h-4 w-4 text-emerald-600"/>
-            <span className="text-xs font-bold text-emerald-700">Collected</span>
-          </div>
-        )}
-      </div>
+      {/* ── DRAWER CONTENT LAYER ── */}
+      <div 
+        ref={scrollRef}
+        className="relative flex min-h-dvh flex-col w-full h-full overflow-y-auto overflow-x-hidden touch-pan-y"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onMouseDown={handleTouchStart}
+        onMouseMove={handleTouchMove}
+        onMouseUp={handleTouchEnd}
+        onMouseLeave={handleTouchEnd}
+        style={{ 
+          transform: `translateY(${!mounted || isClosing ? '100%' : dragY + 'px'})`, 
+          transition: isDragging ? 'none' : 'transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1)' 
+        }}
+      >
+        {/* ── Background that scrolls with content ── */}
+        <div className="absolute top-[0] inset-x-0 bottom-[-500px] -z-10 pointer-events-none flex flex-col">
+          {/* 40vh gradient from transparent to white */}
+          <div className="h-[40vh] shrink-0 bg-gradient-to-b from-transparent to-white" />
+          {/* Solid white for the rest */}
+          <div className="flex-grow bg-white" />
+        </div>
 
-      {/* Main card container overlapping from top */}
-      <div className="mx-auto max-w-2xl px-4 pt-8 sm:pt-10 md:pt-12 pb-6">
-        
-        {/* Tip pill for drag to close */}
-        <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-slate-300/80" />
+        {/* ── Draggable Top Area (Header) ── */}
+        <div 
+          className="w-full flex-col flex shrink-0 relative z-20 pt-6 pb-4"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) handleClose();
+          }}
+        >
+          {/* Apple drag grabber */}
+          <div className="mx-auto h-[6px] w-14 rounded-full bg-slate-400/80 drop-shadow-sm pointer-events-none mt-4 sm:mt-10" />
+        </div>
 
-        {/* Box that shows background outside, holds content inside */}
-        <div className="rounded-2xl bg-white shadow-card-lg ring-1 ring-black/[0.04] p-4 sm:p-6 mb-6">
+        {/* ── Main content wrapper ── */}
+        <div className="mx-auto w-full max-w-2xl px-4 z-10 text-slate-800 mt-2 pb-16">
+          
+          <div className="rounded-2xl bg-white/95 backdrop-blur-md shadow-card-lg ring-1 ring-black/[0.04] p-4 sm:p-6 mb-6">
           
           {/* Post Image Placeholder (Overlapping top edge) */}
           <div className="relative -mt-10 sm:-mt-14 md:-mt-16 aspect-video w-full overflow-hidden rounded-2xl bg-slate-50 shadow-md">
@@ -131,13 +144,13 @@ export default function LocationDetailPage() {
             </div>
             
             {/* Pop-up trigger overlay */}
-            <button 
-              onClick={() => setShow3DModal(true)}
-              className="absolute bottom-4 right-4 flex items-center gap-2 rounded-xl bg-white/90 px-4 py-2 text-sm font-bold text-slate-800 shadow-lg backdrop-blur-md transition-transform hover:scale-105 active:scale-95"
+            <div 
+              onClick={(e) => { e.stopPropagation(); setShow3DModal(true); }}
+              className="absolute bottom-4 right-4 flex items-center gap-2 rounded-xl bg-white/90 px-4 py-2 text-sm font-bold text-slate-800 shadow-lg backdrop-blur-md transition-transform hover:scale-105 active:scale-95 cursor-pointer"
             >
               <Layers className="h-4 w-4 text-brand" />
               3D View
-            </button>
+            </div>
           </div>
 
           {/* Location Name & Distance */}
@@ -145,9 +158,17 @@ export default function LocationDetailPage() {
             <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 leading-tight">
               {locationData.name}
             </h1>
-            <p className="mt-1.5 flex items-center justify-center gap-1.5 text-sm sm:text-base font-medium text-slate-500">
-              Jeju Official Spot • {locationData.distance} away
-            </p>
+            <div className="mt-1.5 flex items-center justify-center gap-1.5 flex-wrap">
+              <p className="text-sm sm:text-base font-medium text-slate-500">
+                Jeju Official Spot • {locationData.distance} away
+              </p>
+              {locationData.collected && (
+                <div className="flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 shadow-sm ring-1 ring-emerald-200 ml-1">
+                  <CheckCircle2 className="h-3 w-3 text-emerald-600"/>
+                  <span className="text-[11px] font-bold text-emerald-700 uppercase tracking-wide">Collected</span>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Unified Action Buttons Row */}
@@ -208,7 +229,7 @@ export default function LocationDetailPage() {
 
           {/* Review cards */}
           <div className="space-y-3">
-            {reviews.map((r) => (
+            {reviews.map((r: ReviewData) => (
               <div key={r.id} className="rounded-2xl bg-white/40 backdrop-blur-sm p-4 shadow-sm ring-1 ring-slate-200/50">
                 <div className="flex items-center gap-3">
                   <div className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold text-white shadow-sm ${r.avatarColor}`}>
@@ -268,6 +289,7 @@ export default function LocationDetailPage() {
           </Button>
         </DialogContent>
       </Dialog>
+      </div>
 
       <BottomNav/>
     </div>

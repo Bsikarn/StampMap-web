@@ -23,30 +23,7 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 
-// Toggle switch component with iOS styling
-function Toggle({
-  enabled,
-  onToggle,
-}: {
-  enabled: boolean;
-  onToggle: () => void;
-}) {
-  return (
-    <button
-      onClick={onToggle}
-      className={`relative h-7 w-12 rounded-full transition-colors duration-200 ${
-        enabled ? "bg-stamp-dark-blue" : "bg-gray-300"
-      }`}
-      aria-label="Toggle setting"
-    >
-      <span
-        className={`absolute top-0.5 h-6 w-6 rounded-full bg-white shadow-sm transition-transform duration-200 ${
-          enabled ? "left-[calc(100%-1.625rem)]" : "left-0.5"
-        }`}
-      />
-    </button>
-  );
-}
+import { SettingsGroup, type SettingGroupData, type SettingItem } from "@/components/settings/settings-group";
 
 // Setting groups configuration
 const settingsGroups = [
@@ -192,7 +169,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="relative min-h-dvh bg-gray-50 pb-24">
+    <div className="relative min-h-dvh bg-gray-50 pb-24 animate-in fade-in slide-in-from-right-4 duration-300 ease-out">
       <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-md shadow-sm">
         <div className="mx-auto flex w-full flex-col items-center justify-center px-4 py-3 text-center">
           <h1 className="text-xl font-bold text-slate-900 leading-none">
@@ -207,51 +184,12 @@ export default function SettingsPage() {
       {/* Settings groups */}
       <div className="mx-auto max-w-4xl space-y-6 px-5 pt-6">
         {settingsGroups.map((group) => (
-          <div key={group.title}>
-            <p className="mb-2.5 ml-2 text-sm font-bold tracking-wide text-slate-500">
-              {group.title}
-            </p>
-            <div className="overflow-hidden rounded-2xl bg-white shadow-card ring-1 ring-black/[0.04]">
-              {group.items.map((item, index) => {
-                const Icon = item.icon;
-                const isLast = index === group.items.length - 1;
-
-                return (
-                  <div key={item.id}>
-                    <div className="flex items-center gap-3 px-4 py-3.5">
-                      {/* Icon */}
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-slate-100">
-                        <Icon className="h-4 w-4 text-slate-500" />
-                      </div>
-
-                      {/* Label */}
-                      <span className="flex-1 text-sm font-medium text-slate-800">
-                        {item.label}
-                      </span>
-
-                      {/* Control element */}
-                      {item.type === "toggle" ? (
-                        <Toggle
-                          enabled={toggleStates[item.id] ?? false}
-                          onToggle={() => handleToggle(item.id)}
-                        />
-                      ) : (
-                        <div className="flex items-center gap-1 text-slate-400">
-                          {"value" in item && item.value && (
-                            <span className="text-xs">{item.value}</span>
-                          )}
-                          <ChevronRight className="h-4 w-4" />
-                        </div>
-                      )}
-                    </div>
-                    {!isLast && (
-                      <div className="mx-4 h-px bg-slate-100" />
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+          <SettingsGroup
+            key={group.title}
+            group={group}
+            toggleStates={toggleStates}
+            onToggle={handleToggle}
+          />
         ))}
 
         {/* Logout button */}

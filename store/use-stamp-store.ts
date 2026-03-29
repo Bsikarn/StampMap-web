@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 // Type definitions for the stamp map application state
-interface StampItem {
+export interface StampItem {
   id: string;
   locationId: string;
   locationName: string;
@@ -10,31 +10,31 @@ interface StampItem {
   collectedAt: string;
 }
 
-interface MapOption {
+export interface MapOption {
   id: string;
   name: string;
   region: string;
 }
 
-interface StampStore {
-  // Stamp progress
+export interface StampStore {
+  // Stamp progress data
   collectedStamps: StampItem[];
   totalStamps: number;
 
-  // Map selection
+  // Map selection configurations
   selectedMap: MapOption;
   availableMaps: MapOption[];
 
-  // UI state
+  // Navigation UI state
   activeTab: string;
 
-  // Actions
+  // State mutation actions
   setSelectedMap: (map: MapOption) => void;
   setActiveTab: (tab: string) => void;
   addStamp: (stamp: StampItem) => void;
 }
 
-// Available map options
+// Available map options acting as database seed mocks
 const defaultMaps: MapOption[] = [
   { id: "jeju", name: "Jeju Island", region: "South Korea" },
   { id: "taiwan", name: "Taiwan", region: "East Asia" },
@@ -43,7 +43,7 @@ const defaultMaps: MapOption[] = [
   { id: "singapore", name: "Singapore", region: "Southeast Asia" },
 ];
 
-// Sample collected stamps for demo
+// Sample collected stamps for demo purposes
 const sampleStamps: StampItem[] = [
   {
     id: "s1",
@@ -71,21 +71,31 @@ const sampleStamps: StampItem[] = [
   },
 ];
 
+/**
+ * Global Zustand Store for Stamp Progress and Map Data
+ * 
+ * Uses Zustand for lightweight, unopinionated state management.
+ * This acts as the single source of truth for map selection and collected stamps.
+ */
 export const useStampStore = create<StampStore>((set) => ({
-  // Initial stamp progress (demo data)
+  // Initialize state with demo data
   collectedStamps: sampleStamps,
   totalStamps: 25,
 
-  // Default map is Jeju Island
+  // Default regional map setup
   selectedMap: defaultMaps[0],
   availableMaps: defaultMaps,
 
-  // Default active navigation tab
+  // Controls the globally active BottomNav tab
   activeTab: "map",
 
-  // Actions
+  // Action: Switch the active map region
   setSelectedMap: (map) => set({ selectedMap: map }),
+  
+  // Action: Switch the active bottom bar tab
   setActiveTab: (tab) => set({ activeTab: tab }),
+  
+  // Action: Collect a new stamp (ensures immutability by creating a new array reference)
   addStamp: (stamp) =>
     set((state) => ({
       collectedStamps: [...state.collectedStamps, stamp],

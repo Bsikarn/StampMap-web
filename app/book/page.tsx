@@ -77,9 +77,9 @@ export default function StampBookPage() {
   };
 
   return (
-    <div className="relative min-h-dvh bg-[#E3F2FD] pb-24 selection:bg-brand/20">
+    <div className="relative min-h-dvh bg-slate-50 pb-24 selection:bg-brand/20 animate-in fade-in slide-in-from-right-4 duration-300 ease-out">
       {/* Top Header */}
-      <div className="sticky top-0 z-40 bg-[#E3F2FD]/80 backdrop-blur-md shadow-sm">
+      <div className="sticky top-0 z-40 bg-slate-50/80 backdrop-blur-md shadow-sm">
         <div className="mx-auto flex w-full max-w-5xl items-center justify-end px-4 py-3">
 
           {/* Action Button (e.g. Sound/Collect) */}
