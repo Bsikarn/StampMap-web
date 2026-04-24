@@ -1,64 +1,69 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Outfit } from "next/font/google";
 import "./globals.css";
 import { BottomNav } from "@/components/bottom-nav";
 
 /**
- * Primary Font Configuration
- * Inter is used globally as a minimal, highly legible sans-serif typeface,
- * matching modern mobile app design standards.
+ * Primary Font: Outfit — Geometric Sans-serif
+ * Chosen for its clean, modern, premium feel that matches Dribbble-quality UI.
+ * 300-900 weight range allows fine typographic control across all UI layers.
  */
-const inter = Inter({
-  variable: "--font-sans",
+const outfit = Outfit({
+  variable: "--font-outfit",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
   display: "swap",
 });
 
 /**
- * Global Metadata Configuration for SEO and System presentation.
- * This determines how the site appears in search engines and social cards.
+ * SEO Metadata — Optimized for Jeju Island tourism discovery.
+ * Includes rich keywords for organic search visibility.
  */
 export const metadata: Metadata = {
-  title: "StampMap - Interactive Stamp Map",
+  title: "StampMap — Jeju Island Digital Passport & Stamp Collection",
   description:
-    "Collect stamps, explore locations, and exchange souvenirs with StampMap. Your interactive passport to the world.",
-  keywords: ["stamp", "map", "travel", "passport", "souvenir", "collection"],
+    "Explore Jeju Island like never before. Collect digital stamps, unlock exclusive souvenirs, and build your interactive travel passport with StampMap.",
+  keywords: [
+    "Jeju Island", "stamp map", "digital passport", "travel", "tourism",
+    "Korea", "stamp collection", "souvenir", "interactive map", "hallasan",
+  ],
+  openGraph: {
+    title: "StampMap — Jeju Island Digital Passport",
+    description: "Collect digital stamps across Jeju Island's iconic locations.",
+    type: "website",
+  },
 };
 
 /**
- * Global Viewport Configuration.
- * Crucial for mobile PWA-like behavior. Disabling user scaling ensures
- * touch interactions (like double-taps) don't accidentally zoom the UI.
+ * Viewport Configuration for mobile PWA experience.
+ * Theme color matches the Jeju Blue brand color for system chrome integration.
  */
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: "#A3D8F4",
+  themeColor: "#3B6CF4",
 };
 
 /**
- * RootLayout Component
- * 
- * The top-most layout wrapper for the Next.js application.
- * It injects global CSS variables, intercepts parallel routes (@modal),
- * and permanently mounts the global BottomNav across all pages.
+ * RootLayout — Top-level shell for all pages.
+ * Injects the Outfit font, global CSS, modal slot, and persistent BottomNav.
  */
 export default function RootLayout({
   children,
   modal,
 }: Readonly<{
   children: React.ReactNode;
-  modal: React.ReactNode; // Next.js parallel route slot for Intercepting Modals
+  modal: React.ReactNode; // Parallel route slot for intercepting modals
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} font-sans antialiased text-slate-800`}>
-        {/* Main content wrapper ensuring a mobile-first fullscreen viewport */}
+      <body className={`${outfit.variable} antialiased text-ink`}>
+        {/* Global layout: full viewport, flex column, centered on wide screens */}
         <div className="mx-auto min-h-dvh flex flex-col w-full relative">
           {children}
-          {modal}   {/* Renders /@modal/... routes when applicable without unmounting base page */}
+          {modal}
           <BottomNav />
         </div>
       </body>

@@ -1,4 +1,4 @@
-import { Calendar } from "lucide-react";
+import { Calendar, Stamp } from "lucide-react";
 
 interface BookCoverProps {
   onClick: () => void;
@@ -7,47 +7,134 @@ interface BookCoverProps {
   date?: string;
 }
 
-export function BookCover({ onClick, title = "UN-OLD-JEJU", subtitle = "STAMPBOOK", date = "2024-01-15" }: BookCoverProps) {
+/**
+ * BookCover — Premium 3D claymorphism stamp book cover card.
+ * Uses a warm orange gradient (Jeju tangerine theme) with:
+ * - Glossy inset highlight for 3D depth
+ * - Embossed title typography
+ * - Circular emblem with island motif
+ * - Date display strip
+ */
+export function BookCover({
+  onClick,
+  title    = "UN-OLD-JEJU",
+  subtitle = "STAMPBOOK",
+  date     = "2024-01-15",
+}: BookCoverProps) {
   return (
     <button
       onClick={onClick}
-      className="group relative flex w-[360px] flex-col items-center overflow-hidden rounded-xl bg-gradient-to-b from-[#FFF3D6] to-[#FFB74D] p-8 shadow-card-lg transition-transform hover:scale-[1.02] active:scale-[0.98]"
+      className="group relative w-full max-w-[340px] overflow-hidden rounded-[28px] transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+      style={{
+        background: "linear-gradient(145deg, #FF9A5C 0%, #FF7B42 40%, #E8612A 100%)",
+        boxShadow:
+          "inset 0 6px 14px rgba(255,255,255,0.35), inset 0 -4px 8px rgba(0,0,0,0.15), 0 24px 60px rgba(255,123,66,0.40), 0 8px 20px rgba(0,0,0,0.08)",
+      }}
     >
-      {/* Decorative dots pattern (subtle) */}
-      <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "radial-gradient(circle, #000 1px, transparent 1px)", backgroundSize: "8px 8px" }} />
+      {/* ── Subtle dot texture ── */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.15) 1px, transparent 1px)",
+          backgroundSize: "8px 8px",
+        }}
+      />
 
-      {/* Bubbly Title */}
-      <div className="relative z-10 flex flex-col items-center drop-shadow-md">
-        <h2 className="font-black tracking-wider text-white" style={{ WebkitTextStroke: "1.5px #1E3A8A", textShadow: "3px 3px 0 #1E3A8A", fontSize: "1.9rem", lineHeight: "1.1" }}>
-          {title}
-        </h2>
-        <h2 className="font-black tracking-wider text-[#FFD54F]" style={{ WebkitTextStroke: "1.5px #1E3A8A", textShadow: "3px 3px 0 #1E3A8A", fontSize: "2.2rem", lineHeight: "1" }}>
-          {subtitle}
-        </h2>
-        {/* Sparkle decoration */}
-        <div className="absolute -left-4 -top-2 h-3 w-3 rotate-45 bg-[#FFD54F]" />
-      </div>
+      {/* ── Top gloss shine ── */}
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 h-1/2 rounded-t-[28px]"
+        style={{ background: "linear-gradient(180deg, rgba(255,255,255,0.28) 0%, transparent 100%)" }}
+      />
 
-      {/* Center Emblem Placehoder */}
-      <div className="relative z-10 mt-8 flex h-44 w-44 items-center justify-center rounded-full border-[4px] border-[#D84315] bg-[#FFF8E1] shadow-inner">
-        <div className="flex h-40 w-40 flex-col items-center justify-center rounded-full border-[3px] border-[#D84315] p-2 text-center text-[#D84315]">
-          <span className="text-xs font-bold tracking-widest">{title}</span>
-          {/* Tree icon mockup */}
-          <div className="my-2 flex items-end justify-center">
-            <div className="h-8 w-10 rounded-t-full bg-[#1E3A8A]" />
-            <div className="h-4 w-5 bg-[#1E3A8A]" />
+      <div className="relative z-10 flex flex-col items-center px-8 pb-8 pt-7">
+
+        {/* ── Title block ── */}
+        <div className="flex flex-col items-center">
+          <div
+            className="text-[10px] font-black tracking-[0.35em] uppercase text-white/60 mb-1"
+          >
+            JEJU ISLAND
           </div>
-          <div className="mb-2 h-4 w-20 bg-[#1E3A8A]" />
-          <span className="text-[9px] leading-[11px] font-bold">Unique Old Temples of<br/>Jeju Heritage</span>
-          <span className="mt-1.5 text-[10px] font-black">ECE-ENG-KMUTNB</span>
+          <h2
+            className="font-black text-white drop-shadow-md leading-none text-center"
+            style={{
+              fontSize: "1.75rem",
+              textShadow: "2px 4px 0 rgba(150,60,10,0.40), 0 1px 0 rgba(255,255,255,0.30)",
+              letterSpacing: "0.06em",
+            }}
+          >
+            {title}
+          </h2>
+          <h3
+            className="font-black leading-none mt-0.5 text-center"
+            style={{
+              fontSize: "2rem",
+              color: "#FFD770",
+              textShadow: "2px 4px 0 rgba(150,60,10,0.40)",
+              letterSpacing: "0.05em",
+            }}
+          >
+            {subtitle}
+          </h3>
         </div>
-      </div>
 
-      {/* Date Box */}
-      <div className="relative z-10 mt-10 flex w-full items-center justify-between px-3">
-        <span className="text-sm font-bold tracking-widest text-white drop-shadow-sm">DATE :</span>
-        <div className="w-32 bg-white px-3 py-2 text-center text-sm font-bold text-slate-800 shadow-sm rounded-sm">
-          {date}
+        {/* ── Circular emblem ── */}
+        <div className="relative mt-6 flex h-[148px] w-[148px] items-center justify-center">
+          {/* Outer ring */}
+          <div
+            className="absolute inset-0 rounded-full"
+            style={{
+              border: "3px solid rgba(255,255,255,0.50)",
+              boxShadow: "inset 0 2px 8px rgba(0,0,0,0.15), 0 0 0 2px rgba(255,150,80,0.60)",
+            }}
+          />
+          {/* Inner fill */}
+          <div
+            className="absolute inset-[6px] rounded-full"
+            style={{
+              background: "rgba(255,255,255,0.12)",
+              border: "1.5px solid rgba(255,255,255,0.30)",
+            }}
+          />
+
+          {/* Emblem content */}
+          <div className="relative z-10 flex flex-col items-center text-center px-3">
+            {/* Hallasan mountain icon (SVG) */}
+            <svg viewBox="0 0 60 40" width="56" height="36" className="drop-shadow-sm">
+              {/* Mountain silhouette */}
+              <path d="M5 38 L20 16 L30 22 L38 8 L55 38 Z" fill="rgba(255,255,255,0.85)"/>
+              {/* Snow cap */}
+              <path d="M35 12 L38 8 L41 14 Z" fill="white" opacity="0.95"/>
+              {/* Sun */}
+              <circle cx="49" cy="12" r="5" fill="#FFD770" opacity="0.90"/>
+            </svg>
+            <p className="text-[8px] font-black text-white tracking-[0.15em] uppercase leading-tight mt-1">
+              Heritage of<br/>Jeju Island
+            </p>
+          </div>
+        </div>
+
+        {/* ── Date strip ── */}
+        <div className="mt-7 flex w-full items-center justify-between rounded-xl px-3 py-2.5"
+          style={{ background: "rgba(0,0,0,0.12)", border: "1px solid rgba(255,255,255,0.20)" }}>
+          <div className="flex items-center gap-1.5">
+            <Calendar className="h-3.5 w-3.5 text-white/70"/>
+            <span className="text-[10px] font-bold tracking-[0.15em] text-white/70 uppercase">Date</span>
+          </div>
+          <div
+            className="rounded-lg px-3 py-1.5 text-sm font-bold text-[#0D1238]"
+            style={{ background: "rgba(255,255,255,0.90)", boxShadow: "inset 0 1px 3px rgba(0,0,0,0.10)" }}
+          >
+            {date}
+          </div>
+        </div>
+
+        {/* ── "Tap to open" CTA ── */}
+        <div className="mt-4 flex items-center gap-1.5 opacity-60">
+          <Stamp className="h-3.5 w-3.5 text-white"/>
+          <p className="text-[10px] font-semibold tracking-wide text-white">
+            Tap to view stamp pages
+          </p>
         </div>
       </div>
     </button>

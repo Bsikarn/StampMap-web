@@ -14,9 +14,10 @@ interface MapPinsProps {
 }
 
 /**
- * MapPins Component
- * Renders interactive location markers on the map background.
- * Separating this prevents the main page.tsx from getting cluttered with specific rendering logic.
+ * MapPins — Premium claymorphism-style interactive location markers.
+ * Collected pins: vibrant Jeju Blue with glowing ring + checkmark.
+ * Uncollected pins: frosted glass with dashed ring + pulsing dot.
+ * Each pin has a glassmorphism tooltip on hover.
  */
 export const MapPins = React.memo(({ pins }: MapPinsProps) => {
   return (
@@ -29,35 +30,87 @@ export const MapPins = React.memo(({ pins }: MapPinsProps) => {
           className="group absolute -translate-x-1/2 -translate-y-full"
           aria-label={pin.name}
         >
-          {/* Drop shadow layer for depth */}
-          <div className="absolute bottom-0 left-1/2 h-2 w-4 -translate-x-1/2 translate-y-1 rounded-full bg-black/10 blur-sm" />
-          
-          {/* Pin body (Circle) */}
-          <div className={`
-            flex h-8 w-8 items-center justify-center rounded-full border-2 border-white shadow-card-md
-            transition-transform duration-150 group-hover:scale-115 group-active:scale-95
-            ${pin.collected ? "bg-brand" : "bg-white"}
-          `}>
-            {pin.collected
-              ? <svg className="h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 14 14"><path d="M3 7l3 3 5-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              : <div className="h-2.5 w-2.5 rounded-full bg-slate-300"/>
-            }
-          </div>
-          
-          {/* Pointer triangle connecting the circle to the exact map point */}
-          <div className={`
-            mx-auto h-2 w-2 rotate-45 -mt-0.5
-            ${pin.collected ? "bg-brand" : "bg-white border border-slate-200"}
-          `}/>
+          {/* ── Pin drop shadow (depth) ── */}
+          <div className="absolute bottom-0 left-1/2 h-2 w-6 -translate-x-1/2 translate-y-2 rounded-full bg-black/10 blur-[3px]" />
 
-          {/* Hover tooltip label */}
-          <div className="pointer-events-none absolute bottom-full left-1/2 mb-3 -translate-x-1/2 whitespace-nowrap rounded-xl bg-slate-900/90 px-3 py-1.5 text-[11px] font-medium text-white opacity-0 shadow-lg backdrop-blur-sm transition-opacity group-hover:opacity-100">
-            {pin.name}
-            <span className={`ml-1.5 text-[10px] font-normal ${pin.collected ? "text-blue-300" : "text-slate-400"}`}>
-              {pin.collected ? "✓" : "○"}
-            </span>
-            {/* Tooltip pointer */}
-            <div className="absolute -bottom-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 bg-slate-900/90"/>
+          {/* ── Outer glow ring (only for collected) ── */}
+          {pin.collected && (
+            <div className="absolute -inset-[5px] animate-ping-slow rounded-full bg-[#3B6CF4]/20 blur-[2px]" />
+          )}
+
+          {/* ── Dashed outer ring (uncollected) ── */}
+          {!pin.collected && (
+            <div
+              className="absolute -inset-[3px] rounded-full border border-dashed border-[#8A91B8]/50 animate-spin"
+              style={{ animationDuration: "8s" }}
+            />
+          )}
+
+          {/* ── Pin body ── */}
+          <div
+            className={`
+              relative flex h-9 w-9 items-center justify-center rounded-full border-2 border-white
+              transition-all duration-200 group-hover:scale-115 group-active:scale-95
+              ${pin.collected
+                ? "bg-gradient-to-br from-[#3B6CF4] to-[#2952D9]"
+                : "bg-white/90 backdrop-blur-sm"
+              }
+            `}
+            style={{
+              boxShadow: pin.collected
+                ? "inset 0 3px 6px rgba(255,255,255,0.35), inset 0 -2px 4px rgba(0,0,0,0.15), 0 6px 20px rgba(59,108,244,0.40)"
+                : "inset 0 2px 4px rgba(255,255,255,0.80), inset 0 -1px 3px rgba(174,182,220,0.40), 0 4px 12px rgba(0,0,0,0.08)",
+            }}
+          >
+            {pin.collected ? (
+              /* Checkmark icon */
+              <svg className="h-4 w-4 text-white drop-shadow-sm" fill="none" viewBox="0 0 16 16">
+                <path d="M3 8l3.5 3.5L13 5" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            ) : (
+              /* Pulsing dot */
+              <div className="relative flex items-center justify-center">
+                <div className="h-3 w-3 animate-ping rounded-full bg-[#8A91B8]/30 absolute" style={{ animationDuration: "2.5s" }}/>
+                <div className="h-2.5 w-2.5 rounded-full bg-[#8A91B8]/60"/>
+              </div>
+            )}
+
+            {/* Shine overlay */}
+            <div className="absolute inset-0 rounded-full bg-gradient-to-b from-white/30 to-transparent" />
+          </div>
+
+          {/* ── Pin stem ── */}
+          <div
+            className={`mx-auto h-2 w-2 rotate-45 -mt-[3px] border-r border-b ${
+              pin.collected
+                ? "bg-[#2952D9] border-white/20"
+                : "bg-white/90 border-[#E0E5F0]"
+            }`}
+          />
+
+          {/* ── Glassmorphism tooltip ── */}
+          <div
+            className="pointer-events-none absolute bottom-full left-1/2 mb-4 -translate-x-1/2 whitespace-nowrap opacity-0 transition-all duration-200 group-hover:opacity-100 group-hover:-translate-y-1"
+            style={{ filter: "drop-shadow(0 4px 12px rgba(59,108,244,0.20))" }}
+          >
+            <div
+              className="flex items-center gap-2 rounded-2xl px-3 py-2"
+              style={{
+                background: "rgba(13, 18, 56, 0.80)",
+                backdropFilter: "blur(16px) saturate(180%)",
+                WebkitBackdropFilter: "blur(16px) saturate(180%)",
+                border: "1px solid rgba(255,255,255,0.10)",
+              }}
+            >
+              {/* Status dot */}
+              <div className={`h-1.5 w-1.5 rounded-full shrink-0 ${pin.collected ? "bg-[#22C55E]" : "bg-[#8A91B8]"}`}/>
+              <span className="text-[12px] font-semibold text-white">{pin.name}</span>
+              <span className={`text-[10px] font-medium ${pin.collected ? "text-[#6EE7B7]" : "text-[#8A91B8]"}`}>
+                {pin.collected ? "Collected" : "Undiscovered"}
+              </span>
+            </div>
+            {/* Tooltip arrow */}
+            <div className="mx-auto h-2 w-2 -mt-1 rotate-45 bg-[rgba(13,18,56,0.80)]" style={{ marginLeft: "calc(50% - 4px)" }}/>
           </div>
         </Link>
       ))}

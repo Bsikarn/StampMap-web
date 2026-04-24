@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, Image as ImageIcon } from "lucide-react";
+import { ChevronLeft, ChevronRight, MapPin, Calendar, Pencil } from "lucide-react";
 import { useState } from "react";
 
 interface StampPageData {
@@ -20,13 +20,18 @@ interface EbookViewerProps {
   onPrev: () => void;
 }
 
+/**
+ * EbookViewer — Premium glassmorphism stamp book page viewer.
+ * Shows location details, a scenic image area, stamp imprint, and memo field.
+ * Navigation uses clay-style pill buttons.
+ */
 export function EbookViewer({ page, currentIndex, totalPages, onNext, onPrev }: EbookViewerProps) {
-  // Store page-specific memos inside a dictionary (page.id -> memoString)
+  // Memo dictionary keyed by page ID
   const [memos, setMemos] = useState<Record<string, string>>({});
 
-  const currentMemo = memos[page.id] !== undefined 
-      ? memos[page.id] 
-      : (page.stamped ? page.stampDate : "");
+  const currentMemo = memos[page.id] !== undefined
+    ? memos[page.id]
+    : (page.stamped ? page.stampDate : "");
 
   const handleMemoChange = (val: string) => {
     setMemos(prev => ({ ...prev, [page.id]: val }));
@@ -34,99 +39,225 @@ export function EbookViewer({ page, currentIndex, totalPages, onNext, onPrev }: 
 
   return (
     <div className="flex w-full flex-col items-center pb-8 animate-stamp-fade-in">
-      {/* Main Page Card */}
-      <div className="w-full max-w-[480px] rounded-2xl border-[3px] border-brand bg-white p-6 sm:p-8 shadow-card-lg">
-        {/* Header - Title & Subtitle */}
-        <div className="flex items-end justify-between px-1">
-          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">{page.locationName}</h2>
-          {page.koreanName && (
-            <span className="text-sm border-b border-transparent sm:text-base font-medium text-amber-600">{page.koreanName}</span>
-          )}
-        </div>
-        
-        {/* Separator Line */}
-        <div className="my-4 h-[2px] w-full bg-slate-800" />
-        
-        {/* Landscape Image Placeholder */}
-        <div className="relative mb-5 flex h-52 w-full items-center justify-center overflow-hidden rounded-lg bg-slate-100 ring-1 ring-slate-200">
-          {page.imageFallback ? (
-            <div className="flex flex-col items-center text-slate-400">
-              <ImageIcon className="h-10 w-10 mb-2" />
-              <span className="text-sm font-medium">Image Placeholder</span>
-            </div>
-          ) : (
-            <div className="absolute inset-0 bg-gradient-to-br from-slate-200 to-slate-300" />
-          )}
-        </div>
-        
-        {/* 2-Column Content */}
-        <div className="flex items-start gap-5">
-          {/* Left: Description */}
-          <div className="flex-[3] text-xs sm:text-sm leading-relaxed text-slate-700">
-            {page.description}
+
+      {/* ══════════════════════════════════
+          MAIN PAGE CARD
+          ══════════════════════════════════ */}
+      <div
+        className="w-full max-w-[480px] overflow-hidden rounded-[28px]"
+        style={{
+          background: "rgba(255,255,255,0.92)",
+          backdropFilter: "blur(28px) saturate(200%)",
+          WebkitBackdropFilter: "blur(28px) saturate(200%)",
+          border: "1.5px solid rgba(255,255,255,0.80)",
+          boxShadow: "0 20px 60px rgba(59,108,244,0.14), 0 6px 20px rgba(0,0,0,0.06)",
+        }}
+      >
+        {/* ── Page header strip ── */}
+        <div
+          className="flex items-center justify-between px-6 py-4"
+          style={{
+            background: "linear-gradient(135deg, rgba(59,108,244,0.08) 0%, rgba(139,92,246,0.06) 100%)",
+            borderBottom: "1px solid rgba(59,108,244,0.08)",
+          }}
+        >
+          <div>
+            <h2 className="text-xl font-black text-[#0D1238] leading-tight">
+              {page.locationName}
+            </h2>
+            {page.koreanName && (
+              <p className="text-sm font-semibold text-[#FF7B42] mt-0.5">{page.koreanName}</p>
+            )}
           </div>
-          
-          {/* Right: Stamp & Date Fields */}
-          <div className="flex flex-[2] flex-col gap-3">
-            {/* Stamp Square */}
-            <div className={`flex aspect-square items-center justify-center rounded-xl border-2 ${page.stamped ? "border-amber-200 bg-amber-50" : "border-slate-200 bg-slate-50"}`}>
-              {page.stamped ? (
-                page.stampImage ? (
-                  <div className="relative h-20 w-20 sm:h-24 sm:w-24">
-                     {/* Simulated Stamp Graphics */}
-                     <div className="absolute inset-0 rounded-full border border-amber-500/30" />
-                     <div className="absolute inset-2 rounded-full border border-amber-500/20" />
-                     <div className="absolute inset-x-2 top-1/2 h-5 -translate-y-1/2 bg-amber-500/10" />
-                     <span className="absolute inset-0 flex items-center justify-center text-[10px] sm:text-xs font-bold text-amber-600 whitespace-nowrap -rotate-12">STAMPED</span>
+
+          {/* Page number badge */}
+          <div
+            className="flex flex-col items-center rounded-2xl px-3.5 py-2"
+            style={{
+              background: "linear-gradient(135deg, #3B6CF4, #2952D9)",
+              boxShadow: "inset 0 2px 4px rgba(255,255,255,0.30), 0 4px 12px rgba(59,108,244,0.40)",
+            }}
+          >
+            <span className="text-[9px] font-bold uppercase tracking-wider text-white/70">Page</span>
+            <span className="text-lg font-black text-white leading-none">{currentIndex + 1}</span>
+          </div>
+        </div>
+
+        <div className="px-6 py-5">
+          {/* ── Location Image Placeholder ── */}
+          <div
+            className="relative mb-5 flex h-48 w-full items-center justify-center overflow-hidden rounded-[18px]"
+            style={{
+              background: page.stamped
+                ? "linear-gradient(135deg, #DBEAFE 0%, #EEF2FF 50%, #F3F0FF 100%)"
+                : "linear-gradient(135deg, #F2F4FC 0%, #E8EAF6 100%)",
+              border: "1px solid rgba(59,108,244,0.10)",
+            }}
+          >
+            {/* Decorative landscape SVG */}
+            <svg viewBox="0 0 200 120" width="100%" height="100%" className="absolute inset-0 opacity-60">
+              {/* Sky gradient */}
+              <defs>
+                <linearGradient id="skyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%"   stopColor={page.stamped ? "#BFDBFE" : "#E8EAF6"} />
+                  <stop offset="100%" stopColor={page.stamped ? "#EEF2FF" : "#F2F4FC"} />
+                </linearGradient>
+              </defs>
+              <rect width="200" height="120" fill="url(#skyGrad)" />
+              {/* Mountains */}
+              <path d="M0 90 L40 50 L70 75 L100 35 L130 65 L160 45 L200 80 L200 120 L0 120 Z"
+                fill={page.stamped ? "rgba(59,108,244,0.15)" : "rgba(174,182,220,0.25)"}/>
+              {/* Water / foreground */}
+              <rect x="0" y="95" width="200" height="25"
+                fill={page.stamped ? "rgba(59,108,244,0.10)" : "rgba(174,182,220,0.15)"}/>
+              {/* Sun */}
+              {page.stamped && <circle cx="160" cy="28" r="14" fill="rgba(255,200,50,0.30)"/>}
+            </svg>
+
+            {/* Location label overlay */}
+            <div
+              className="relative z-10 flex items-center gap-2 rounded-full px-3.5 py-1.5"
+              style={{
+                background: "rgba(255,255,255,0.75)",
+                backdropFilter: "blur(12px)",
+                WebkitBackdropFilter: "blur(12px)",
+                border: "1px solid rgba(255,255,255,0.70)",
+                boxShadow: "0 2px 8px rgba(59,108,244,0.12)",
+              }}
+            >
+              <MapPin className="h-3.5 w-3.5 text-[#3B6CF4]"/>
+              <span className="text-xs font-bold text-[#0D1238]">{page.locationName}</span>
+            </div>
+          </div>
+
+          {/* ── Two-column: description + stamp ── */}
+          <div className="flex items-start gap-4">
+
+            {/* Left: Description */}
+            <div className="flex-[3] text-sm leading-relaxed text-[#3D4875]">
+              {page.description}
+            </div>
+
+            {/* Right: Stamp + Memo */}
+            <div className="flex flex-[2] flex-col gap-3">
+
+              {/* Stamp square */}
+              <div
+                className="flex aspect-square items-center justify-center rounded-[16px]"
+                style={
+                  page.stamped
+                    ? {
+                        background: "linear-gradient(135deg, rgba(255,215,100,0.15), rgba(255,180,50,0.10))",
+                        border: "1.5px solid rgba(255,180,50,0.30)",
+                        boxShadow: "inset 0 2px 4px rgba(255,255,255,0.80)",
+                      }
+                    : {
+                        background: "#F2F4FC",
+                        border: "1.5px dashed rgba(174,182,220,0.60)",
+                      }
+                }
+              >
+                {page.stamped ? (
+                  /* Decorative stamp imprint */
+                  <div className="relative flex items-center justify-center h-full w-full p-2">
+                    <svg viewBox="0 0 60 60" className="w-full h-full opacity-70" style={{ color: "#B45309" }}>
+                      <circle cx="30" cy="30" r="27" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="3 2"/>
+                      <circle cx="30" cy="30" r="20" fill="none" stroke="currentColor" strokeWidth="1.2"/>
+                      <text x="30" y="23" textAnchor="middle" fontSize="7" fontWeight="900" fill="currentColor" letterSpacing="2">JEJU</text>
+                      <text x="30" y="33" textAnchor="middle" fontSize="5" fontWeight="700" fill="currentColor" letterSpacing="1">ISLAND</text>
+                      <text x="30" y="42" textAnchor="middle" fontSize="5" fontWeight="700" fill="currentColor">✦ 제주도 ✦</text>
+                    </svg>
                   </div>
                 ) : (
-                   <span className="text-xs sm:text-sm font-bold text-amber-600">STAMPED</span>
-                )
-              ) : (
-                <span className="text-xs sm:text-sm font-medium text-slate-300">No stamp</span>
+                  <span className="text-[11px] font-medium text-[#C4CAE8] text-center px-2">
+                    Not yet<br/>stamped
+                  </span>
+                )}
+              </div>
+
+              {/* Memo input */}
+              <div
+                className="flex items-center gap-2 rounded-[12px] px-3 py-2.5 transition-all focus-within:ring-2 focus-within:ring-[#3B6CF4]/20"
+                style={{
+                  background: "#F8F9FF",
+                  border: "1px solid rgba(59,108,244,0.12)",
+                }}
+              >
+                <Pencil className="h-3 w-3 shrink-0 text-[#8A91B8]"/>
+                <input
+                  type="text"
+                  value={currentMemo}
+                  onChange={(e) => handleMemoChange(e.target.value)}
+                  placeholder="Add memo..."
+                  className="flex-1 bg-transparent text-[11px] font-medium text-[#3D4875] outline-none placeholder:text-[#C4CAE8]"
+                  maxLength={40}
+                />
+              </div>
+
+              {/* Date chip */}
+              {page.stamped && page.stampDate && (
+                <div className="flex items-center gap-1.5 rounded-[10px] bg-[#F2F4FC] px-2.5 py-1.5">
+                  <Calendar className="h-3 w-3 text-[#8B5CF6]"/>
+                  <span className="text-[10px] font-semibold text-[#3D4875]">{page.stampDate}</span>
+                </div>
               )}
-            </div>
-            
-            {/* Memo Input */}
-            <div className="flex h-12 flex-col justify-center border-t border-slate-200 bg-transparent px-3 transition-colors focus-within:border-brand focus-within:bg-brand/5">
-              <input 
-                type="text" 
-                value={currentMemo}
-                onChange={(e) => handleMemoChange(e.target.value)}
-                placeholder="Tap to write a memo..."
-                className="w-full bg-transparent text-sm font-medium text-slate-700 outline-none placeholder:font-normal placeholder:text-slate-400"
-                maxLength={40}
-              />
             </div>
           </div>
         </div>
       </div>
 
-      {/* Navigation Pills */}
-      <div className="mt-8 flex items-center justify-center gap-4">
+      {/* ══════════════════════════════════
+          NAVIGATION PILLS
+          ══════════════════════════════════ */}
+      <div className="mt-7 flex items-center justify-center gap-3">
         {/* Previous */}
         <button
           onClick={onPrev}
           disabled={currentIndex === 0}
-          className="flex h-11 items-center rounded-full border-2 border-brand bg-white px-5 text-sm font-bold text-brand shadow-sm transition-all hover:bg-slate-50 disabled:opacity-40"
+          className="flex items-center gap-1.5 rounded-full px-5 py-2.5 text-sm font-bold transition-all duration-200 active:scale-95 disabled:opacity-40"
+          style={{
+            background: "rgba(255,255,255,0.85)",
+            backdropFilter: "blur(16px)",
+            WebkitBackdropFilter: "blur(16px)",
+            border: "1px solid rgba(59,108,244,0.15)",
+            color: "#3B6CF4",
+            boxShadow: "0 4px 12px rgba(59,108,244,0.12)",
+          }}
         >
-          <ChevronLeft className="mr-1.5 h-5 w-5" />
-          Previous
+          <ChevronLeft className="h-4 w-4"/>
+          Prev
         </button>
 
-        {/* Page Indicator */}
-        <div className="flex h-11 items-center rounded-full border-2 border-brand bg-white px-5 text-sm font-bold text-brand shadow-sm">
-          Page {currentIndex + 1} of {totalPages}
+        {/* Page indicator dots */}
+        <div className="flex items-center gap-1.5">
+          {Array.from({ length: totalPages }).map((_, i) => (
+            <div
+              key={i}
+              className="rounded-full transition-all duration-300"
+              style={{
+                width:  i === currentIndex ? "20px" : "6px",
+                height: "6px",
+                background: i === currentIndex
+                  ? "linear-gradient(90deg,#3B6CF4,#8B5CF6)"
+                  : "#D4D8F0",
+              }}
+            />
+          ))}
         </div>
 
         {/* Next */}
         <button
           onClick={onNext}
           disabled={currentIndex === totalPages - 1}
-          className="flex h-11 items-center rounded-full border-2 border-brand bg-white px-5 text-sm font-bold text-brand shadow-sm transition-all hover:bg-slate-50 disabled:opacity-40"
+          className="flex items-center gap-1.5 rounded-full px-5 py-2.5 text-sm font-bold transition-all duration-200 active:scale-95 disabled:opacity-40"
+          style={{
+            background: "linear-gradient(135deg, #3B6CF4, #2952D9)",
+            color: "#FFF",
+            boxShadow: "inset 0 2px 4px rgba(255,255,255,0.25), 0 6px 20px rgba(59,108,244,0.40)",
+          }}
         >
           Next
-          <ChevronRight className="ml-1.5 h-5 w-5" />
+          <ChevronRight className="h-4 w-4"/>
         </button>
       </div>
     </div>
