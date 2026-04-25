@@ -13,10 +13,7 @@ export function MapBackground() {
     <>
       {/* ── Ocean base — layered gradient ── */}
       <div
-        className="absolute inset-0"
-        style={{
-          background: "linear-gradient(160deg, #E8F0FE 0%, #EEF6FF 40%, #F0F4FF 60%, #EAF0FF 100%)",
-        }}
+        className="absolute inset-0 bg-[linear-gradient(160deg,#E8F0FE_0%,#EEF6FF_40%,#F0F4FF_60%,#EAF0FF_100%)]"
       />
 
       {/* ── Subtle dot grid pattern ── */}

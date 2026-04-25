@@ -1,6 +1,8 @@
 import React from "react";
 import { ChevronRight } from "lucide-react";
 import { ToggleSwitch } from "@/components/ui/toggle-switch";
+import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
 
 export type SettingItem = {
   id: string;
@@ -23,18 +25,18 @@ interface SettingsGroupProps {
 }
 
 /**
- * SettingsGroup Component
- * 
- * Renders a specific category block within the Settings page.
- * Maps through individual setting items and handles toggle states vs static links.
+ * SettingsGroup — Renders a single settings category card.
+ * Uses Tailwind v4 design tokens (glass, brand, ink tokens) instead of hardcoded colors.
+ * Replaces internal divider with shadcn/ui Separator.
  */
 export const SettingsGroup = React.memo(({ group, toggleStates, onToggle }: SettingsGroupProps) => {
   return (
     <div>
-      <p className="mb-2.5 ml-2 text-sm font-bold tracking-wide text-slate-500">
+      <p className="mb-2.5 ml-2 text-xs font-bold uppercase tracking-[0.14em] text-ink-muted">
         {group.title}
       </p>
-      <div className="overflow-hidden rounded-2xl bg-white shadow-card ring-1 ring-black/[0.04]">
+
+      <div className="glass shadow-soft overflow-hidden rounded-[20px] border border-white/65">
         {group.items.map((item, index) => {
           const Icon = item.icon;
           const isLast = index === group.items.length - 1;
@@ -42,34 +44,34 @@ export const SettingsGroup = React.memo(({ group, toggleStates, onToggle }: Sett
           return (
             <div key={item.id}>
               <div className="flex items-center gap-3 px-4 py-3.5">
-                {/* Visual Icon */}
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-slate-100">
-                  <Icon className="h-4 w-4 text-slate-500" />
+                {/* Icon container with brand-light background */}
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-surface-subtle">
+                  <Icon className="h-4 w-4 text-ink-secondary" />
                 </div>
 
-                {/* Main Label */}
-                <span className="flex-1 text-sm font-medium text-slate-800">
+                {/* Label */}
+                <span className="flex-1 text-sm font-medium text-ink">
                   {item.label}
                 </span>
 
-                {/* Action Control: Toggle or Navigation Indicator */}
+                {/* Action: Toggle or chevron link */}
                 {item.type === "toggle" ? (
                   <ToggleSwitch
                     enabled={toggleStates[item.id] ?? false}
                     onToggle={() => onToggle(item.id)}
                   />
                 ) : (
-                  <div className="flex items-center gap-1 text-slate-400">
+                  <div className="flex items-center gap-1 text-ink-muted">
                     {item.value && (
-                      <span className="text-xs">{item.value}</span>
+                      <span className="text-xs font-medium">{item.value}</span>
                     )}
                     <ChevronRight className="h-4 w-4" />
                   </div>
                 )}
               </div>
-              
-              {/* Internal Divider */}
-              {!isLast && <div className="mx-4 h-px bg-slate-100" />}
+
+              {/* Internal divider via shadcn/ui Separator */}
+              {!isLast && <Separator className="mx-4 bg-brand/6 w-[calc(100%-2rem)]" />}
             </div>
           );
         })}

@@ -31,18 +31,15 @@ export default function SplashPage() {
       <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
         {/* Outer ring */}
         <div
-          className="h-[380px] w-[380px] animate-spin rounded-full border border-dashed border-[#3B6CF4]/15"
-          style={{ animationDuration: "18s" }}
+          className="h-[380px] w-[380px] animate-[spin_18s_linear_infinite] rounded-full border border-dashed border-[#3B6CF4]/15"
         />
         {/* Mid ring */}
         <div
-          className="absolute h-[280px] w-[280px] animate-spin rounded-full border border-dashed border-[#FF7B42]/20"
-          style={{ animationDuration: "12s", animationDirection: "reverse" }}
+          className="absolute h-[280px] w-[280px] animate-[spin_12s_linear_infinite_reverse] rounded-full border border-dashed border-[#FF7B42]/20"
         />
         {/* Inner pulse ring */}
         <div
-          className="absolute h-[190px] w-[190px] animate-ping rounded-full border border-[#3B6CF4]/12"
-          style={{ animationDuration: "2.8s" }}
+          className="absolute h-[190px] w-[190px] animate-[ping_2.8s_cubic-bezier(0,0,0.2,1)_infinite] rounded-full border border-[#3B6CF4]/12"
         />
       </div>
 
@@ -72,17 +69,17 @@ export default function SplashPage() {
         </div>
 
         {/* App name */}
-        <h1 className="mt-7 font-outfit text-[2.4rem] font-black tracking-tight text-[#0D1238] leading-none">
+        <h1 className="mt-7 font-outfit text-[2.4rem] font-black tracking-tight text-ink leading-none">
           StampMap
         </h1>
-        <p className="mt-2 font-outfit text-sm font-medium tracking-[0.12em] text-[#8A91B8] uppercase">
+        <p className="mt-2 font-outfit text-sm font-medium tracking-[0.12em] text-ink-muted uppercase">
           Jeju Island Passport
         </p>
 
         {/* Glass pill badge */}
         <div className="mt-5 flex items-center gap-2 rounded-full glass px-4 py-1.5 shadow-soft">
-          <span className="h-2 w-2 rounded-full bg-[#22C55E] shadow-sm" />
-          <span className="text-[11px] font-semibold tracking-wide text-[#3D4875]">
+          <span className="h-2 w-2 rounded-full bg-success shadow-sm" />
+          <span className="text-[11px] font-semibold tracking-wide text-ink">
             7 Locations · 3 Collected
           </span>
         </div>
@@ -114,16 +111,14 @@ export default function SplashPage() {
           {[0, 1, 2, 3].map((i) => (
             <div
               key={i}
-              className="h-1.5 rounded-full bg-[#3B6CF4] animate-pulse"
+              className={`h-1.5 rounded-full bg-brand animate-pulse ${i === 1 ? "w-[20px] opacity-100" : "w-[6px] opacity-40"}`}
               style={{
-                width: i === 1 ? "20px" : "6px",
                 animationDelay: `${i * 0.18}s`,
-                opacity: i === 1 ? 1 : 0.4,
               }}
             />
           ))}
         </div>
-        <p className="text-[11px] font-medium tracking-widest text-[#8A91B8] uppercase">
+        <p className="text-[11px] font-medium tracking-widest text-ink-muted uppercase">
           Loading...
         </p>
       </div>

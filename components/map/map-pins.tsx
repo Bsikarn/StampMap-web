@@ -52,15 +52,10 @@ export const MapPins = React.memo(({ pins }: MapPinsProps) => {
               relative flex h-9 w-9 items-center justify-center rounded-full border-2 border-white
               transition-all duration-200 group-hover:scale-115 group-active:scale-95
               ${pin.collected
-                ? "bg-gradient-to-br from-[#3B6CF4] to-[#2952D9]"
-                : "bg-white/90 backdrop-blur-sm"
+                ? "gradient-jeju shadow-[inset_0_3px_6px_rgba(255,255,255,0.35),inset_0_-2px_4px_rgba(0,0,0,0.15),0_6px_20px_rgba(59,108,244,0.40)]"
+                : "bg-white/90 backdrop-blur-sm shadow-[inset_0_2px_4px_rgba(255,255,255,0.80),inset_0_-1px_3px_rgba(174,182,220,0.40),0_4px_12px_rgba(0,0,0,0.08)]"
               }
             `}
-            style={{
-              boxShadow: pin.collected
-                ? "inset 0 3px 6px rgba(255,255,255,0.35), inset 0 -2px 4px rgba(0,0,0,0.15), 0 6px 20px rgba(59,108,244,0.40)"
-                : "inset 0 2px 4px rgba(255,255,255,0.80), inset 0 -1px 3px rgba(174,182,220,0.40), 0 4px 12px rgba(0,0,0,0.08)",
-            }}
           >
             {pin.collected ? (
               /* Checkmark icon */
@@ -90,17 +85,10 @@ export const MapPins = React.memo(({ pins }: MapPinsProps) => {
 
           {/* ── Glassmorphism tooltip ── */}
           <div
-            className="pointer-events-none absolute bottom-full left-1/2 mb-4 -translate-x-1/2 whitespace-nowrap opacity-0 transition-all duration-200 group-hover:opacity-100 group-hover:-translate-y-1"
-            style={{ filter: "drop-shadow(0 4px 12px rgba(59,108,244,0.20))" }}
+            className="pointer-events-none absolute bottom-full left-1/2 mb-4 -translate-x-1/2 whitespace-nowrap opacity-0 transition-all duration-200 group-hover:opacity-100 group-hover:-translate-y-1 drop-shadow-[0_4px_12px_rgba(59,108,244,0.20)]"
           >
             <div
-              className="flex items-center gap-2 rounded-2xl px-3 py-2"
-              style={{
-                background: "rgba(13, 18, 56, 0.80)",
-                backdropFilter: "blur(16px) saturate(180%)",
-                WebkitBackdropFilter: "blur(16px) saturate(180%)",
-                border: "1px solid rgba(255,255,255,0.10)",
-              }}
+              className="flex items-center gap-2 rounded-2xl px-3 py-2 bg-ink/80 backdrop-blur-md backdrop-saturate-[1.8] border border-white/10"
             >
               {/* Status dot */}
               <div className={`h-1.5 w-1.5 rounded-full shrink-0 ${pin.collected ? "bg-[#22C55E]" : "bg-[#8A91B8]"}`}/>

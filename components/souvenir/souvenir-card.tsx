@@ -1,5 +1,7 @@
 import React from "react";
 import { Sparkles } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 export interface SouvenirItem {
   id: number;
@@ -16,106 +18,91 @@ interface SouvenirCardProps {
 
 /**
  * SouvenirCard — Premium claymorphism souvenir item card.
- * Features a 3D emoji icon with ambient glow, glassmorphism body,
- * stock badge, stamp count, and a clay-style redeem button.
+ * Uses Tailwind v4 custom utilities (glass, clay, shadow-soft) and shadcn/ui Badge.
+ * Features a 3D emoji icon with ambient glow and a clay-style redeem button.
  */
 export const SouvenirCard = React.memo(({ item, onExchange }: SouvenirCardProps) => {
   return (
     <div
-      className="group flex flex-col overflow-hidden rounded-[24px] transition-all duration-300 hover:scale-[1.02] hover:-translate-y-0.5"
-      style={{
-        background: "rgba(255,255,255,0.85)",
-        backdropFilter: "blur(20px) saturate(180%)",
-        WebkitBackdropFilter: "blur(20px) saturate(180%)",
-        border: "1px solid rgba(255,255,255,0.70)",
-        boxShadow: "0 6px 24px rgba(59,108,244,0.08), 0 2px 8px rgba(0,0,0,0.04)",
-      }}
+      className={cn(
+        "group flex flex-col overflow-hidden rounded-[24px]",
+        "glass shadow-soft border border-white/70",
+        "transition-all duration-300 hover:scale-[1.02] hover:-translate-y-0.5 hover:shadow-soft-md"
+      )}
     >
       {/* ── Emoji icon area ── */}
       <div
-        className="relative flex aspect-square items-center justify-center"
-        style={{
-          background: item.inStock
-            ? "linear-gradient(145deg, #EEF2FF 0%, #F3F0FF 100%)"
-            : "linear-gradient(145deg, #F8F9FF 0%, #F2F4FC 100%)",
-        }}
+        className={cn(
+          "relative flex aspect-square items-center justify-center",
+          item.inStock
+            ? "bg-gradient-to-br from-brand-light to-accent-pale"
+            : "bg-gradient-to-br from-surface-raised to-surface-subtle"
+        )}
       >
-        {/* Ambient glow behind emoji */}
+        {/* Ambient glow behind emoji (in-stock only) */}
         {item.inStock && (
-          <div
-            className="absolute inset-[15%] rounded-full opacity-40 blur-xl group-hover:opacity-60 transition-opacity"
-            style={{ background: "radial-gradient(circle, rgba(59,108,244,0.35), transparent 70%)" }}
-          />
+          <div className="absolute inset-[15%] rounded-full opacity-40 blur-xl group-hover:opacity-60 transition-opacity bg-[radial-gradient(circle,rgba(59,108,244,0.35),transparent_70%)]" />
         )}
 
         {/* 3D emoji icon */}
         <span
-          className="relative z-10 text-5xl transition-transform duration-300 group-hover:scale-110 group-hover:-translate-y-1 drop-shadow-lg select-none"
-          style={{ filter: item.inStock ? "drop-shadow(0 6px 12px rgba(59,108,244,0.25))" : "grayscale(0.6) opacity(0.6)" }}
+          className={cn(
+            "relative z-10 text-5xl transition-transform duration-300 select-none drop-shadow-lg",
+            "group-hover:scale-110 group-hover:-translate-y-1",
+            !item.inStock && "grayscale-[0.6] opacity-60"
+          )}
+          style={item.inStock ? { filter: "drop-shadow(0 6px 12px rgba(59,108,244,0.25))" } : undefined}
         >
           {item.image}
         </span>
 
-        {/* Stock badge */}
-        <div
-          className="absolute right-2.5 top-2.5 rounded-full px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider"
-          style={
-            item.inStock
-              ? {
-                  background: "rgba(34,197,94,0.12)",
-                  border: "1px solid rgba(34,197,94,0.25)",
-                  color: "#16A34A",
-                }
-              : {
-                  background: "rgba(174,182,220,0.20)",
-                  border: "1px solid rgba(174,182,220,0.30)",
-                  color: "#8A91B8",
-                }
-          }
-        >
-          {item.inStock ? "In Stock" : "Sold Out"}
+        {/* Stock badge — shadcn/ui Badge */}
+        <div className="absolute right-2.5 top-2.5">
+          <Badge
+            variant={item.inStock ? "default" : "secondary"}
+            className={cn(
+              "text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full",
+              item.inStock
+                ? "bg-success/12 text-[#16A34A] border border-success/25 hover:bg-success/12"
+                : "bg-ink-ghost/20 text-ink-muted border border-ink-ghost/30 hover:bg-ink-ghost/20"
+            )}
+          >
+            {item.inStock ? "In Stock" : "Sold Out"}
+          </Badge>
         </div>
       </div>
 
       {/* ── Card body ── */}
       <div className="flex flex-1 flex-col p-3.5 gap-2">
-        <h3 className="text-[13px] font-bold leading-snug text-[#0D1238]">
+        <h3 className="text-[13px] font-bold leading-snug text-ink">
           {item.name}
         </h3>
 
-        {/* Stamps required */}
+        {/* Stamps required counter */}
         <div className="flex items-center gap-1.5">
-          <div
-            className="flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-black text-white"
-            style={{ background: "linear-gradient(135deg,#3B6CF4,#8B5CF6)" }}
-          >
+          <div className="flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-black text-white gradient-jeju">
             ✦
           </div>
-          <span className="text-sm font-black text-[#3B6CF4]">{item.stampsRequired}</span>
-          <span className="text-[11px] font-medium text-[#8A91B8]">stamps</span>
+          <span className="text-sm font-black text-brand">{item.stampsRequired}</span>
+          <span className="text-[11px] font-medium text-ink-muted">stamps</span>
         </div>
 
         {/* Redeem button */}
         <button
           onClick={() => onExchange(item)}
           disabled={!item.inStock}
-          className="mt-auto w-full rounded-[14px] py-2.5 text-[12px] font-bold transition-all duration-200 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
-          style={
+          className={cn(
+            "mt-auto w-full rounded-[14px] py-2.5 text-[12px] font-bold",
+            "transition-all duration-200 active:scale-95",
+            "disabled:opacity-40 disabled:cursor-not-allowed",
             item.inStock
-              ? {
-                  background: "linear-gradient(135deg, #3B6CF4, #2952D9)",
-                  color: "#FFF",
-                  boxShadow: "inset 0 2px 4px rgba(255,255,255,0.25), 0 4px 14px rgba(59,108,244,0.38)",
-                }
-              : {
-                  background: "#F2F4FC",
-                  color: "#C4CAE8",
-                  border: "1px solid rgba(174,182,220,0.30)",
-                }
-          }
+              ? "gradient-jeju text-white shadow-soft-md"
+              : "bg-surface-subtle text-ink-ghost border border-ink-ghost/30"
+          )}
+          style={item.inStock ? { boxShadow: "inset 0 2px 4px rgba(255,255,255,0.25), 0 4px 14px rgba(59,108,244,0.38)" } : undefined}
         >
           <span className="flex items-center justify-center gap-1.5">
-            {item.inStock && <Sparkles className="h-3 w-3"/>}
+            {item.inStock && <Sparkles className="h-3 w-3" />}
             Redeem
           </span>
         </button>

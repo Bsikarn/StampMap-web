@@ -44,25 +44,14 @@ export function EbookViewer({ page, currentIndex, totalPages, onNext, onPrev }: 
           MAIN PAGE CARD
           ══════════════════════════════════ */}
       <div
-        className="w-full max-w-[480px] overflow-hidden rounded-[28px]"
-        style={{
-          background: "rgba(255,255,255,0.92)",
-          backdropFilter: "blur(28px) saturate(200%)",
-          WebkitBackdropFilter: "blur(28px) saturate(200%)",
-          border: "1.5px solid rgba(255,255,255,0.80)",
-          boxShadow: "0 20px 60px rgba(59,108,244,0.14), 0 6px 20px rgba(0,0,0,0.06)",
-        }}
+        className="w-full max-w-[480px] overflow-hidden rounded-[28px] glass-heavy border-[1.5px] border-white/80 shadow-[0_20px_60px_rgba(59,108,244,0.14),0_6px_20px_rgba(0,0,0,0.06)]"
       >
         {/* ── Page header strip ── */}
         <div
-          className="flex items-center justify-between px-6 py-4"
-          style={{
-            background: "linear-gradient(135deg, rgba(59,108,244,0.08) 0%, rgba(139,92,246,0.06) 100%)",
-            borderBottom: "1px solid rgba(59,108,244,0.08)",
-          }}
+          className="flex items-center justify-between px-6 py-4 bg-gradient-to-br from-brand/8 to-accent-purple/6 border-b border-brand/8"
         >
           <div>
-            <h2 className="text-xl font-black text-[#0D1238] leading-tight">
+            <h2 className="text-xl font-black text-ink leading-tight">
               {page.locationName}
             </h2>
             {page.koreanName && (
@@ -72,11 +61,7 @@ export function EbookViewer({ page, currentIndex, totalPages, onNext, onPrev }: 
 
           {/* Page number badge */}
           <div
-            className="flex flex-col items-center rounded-2xl px-3.5 py-2"
-            style={{
-              background: "linear-gradient(135deg, #3B6CF4, #2952D9)",
-              boxShadow: "inset 0 2px 4px rgba(255,255,255,0.30), 0 4px 12px rgba(59,108,244,0.40)",
-            }}
+            className="flex flex-col items-center rounded-2xl px-3.5 py-2 gradient-jeju shadow-[inset_0_2px_4px_rgba(255,255,255,0.30),0_4px_12px_rgba(59,108,244,0.40)]"
           >
             <span className="text-[9px] font-bold uppercase tracking-wider text-white/70">Page</span>
             <span className="text-lg font-black text-white leading-none">{currentIndex + 1}</span>
@@ -86,13 +71,11 @@ export function EbookViewer({ page, currentIndex, totalPages, onNext, onPrev }: 
         <div className="px-6 py-5">
           {/* ── Location Image Placeholder ── */}
           <div
-            className="relative mb-5 flex h-48 w-full items-center justify-center overflow-hidden rounded-[18px]"
-            style={{
-              background: page.stamped
-                ? "linear-gradient(135deg, #DBEAFE 0%, #EEF2FF 50%, #F3F0FF 100%)"
-                : "linear-gradient(135deg, #F2F4FC 0%, #E8EAF6 100%)",
-              border: "1px solid rgba(59,108,244,0.10)",
-            }}
+            className={`relative mb-5 flex h-48 w-full items-center justify-center overflow-hidden rounded-[18px] border border-brand/10 ${
+              page.stamped
+                ? "bg-[linear-gradient(135deg,#DBEAFE_0%,#EEF2FF_50%,#F3F0FF_100%)]"
+                : "bg-[linear-gradient(135deg,#F2F4FC_0%,#E8EAF6_100%)]"
+            }`}
           >
             {/* Decorative landscape SVG */}
             <svg viewBox="0 0 200 120" width="100%" height="100%" className="absolute inset-0 opacity-60">
@@ -116,17 +99,10 @@ export function EbookViewer({ page, currentIndex, totalPages, onNext, onPrev }: 
 
             {/* Location label overlay */}
             <div
-              className="relative z-10 flex items-center gap-2 rounded-full px-3.5 py-1.5"
-              style={{
-                background: "rgba(255,255,255,0.75)",
-                backdropFilter: "blur(12px)",
-                WebkitBackdropFilter: "blur(12px)",
-                border: "1px solid rgba(255,255,255,0.70)",
-                boxShadow: "0 2px 8px rgba(59,108,244,0.12)",
-              }}
+              className="relative z-10 flex items-center gap-2 rounded-full px-3.5 py-1.5 bg-white/75 backdrop-blur-md border border-white/70 shadow-brand-soft"
             >
-              <MapPin className="h-3.5 w-3.5 text-[#3B6CF4]"/>
-              <span className="text-xs font-bold text-[#0D1238]">{page.locationName}</span>
+              <MapPin className="h-3.5 w-3.5 text-brand"/>
+              <span className="text-xs font-bold text-ink">{page.locationName}</span>
             </div>
           </div>
 
@@ -143,19 +119,11 @@ export function EbookViewer({ page, currentIndex, totalPages, onNext, onPrev }: 
 
               {/* Stamp square */}
               <div
-                className="flex aspect-square items-center justify-center rounded-[16px]"
-                style={
+                className={`flex aspect-square items-center justify-center rounded-[16px] ${
                   page.stamped
-                    ? {
-                        background: "linear-gradient(135deg, rgba(255,215,100,0.15), rgba(255,180,50,0.10))",
-                        border: "1.5px solid rgba(255,180,50,0.30)",
-                        boxShadow: "inset 0 2px 4px rgba(255,255,255,0.80)",
-                      }
-                    : {
-                        background: "#F2F4FC",
-                        border: "1.5px dashed rgba(174,182,220,0.60)",
-                      }
-                }
+                    ? "bg-[linear-gradient(135deg,rgba(255,215,100,0.15),rgba(255,180,50,0.10))] border-[1.5px] border-[#FFB432]/30 shadow-[inset_0_2px_4px_rgba(255,255,255,0.80)]"
+                    : "bg-surface-subtle border-[1.5px] border-dashed border-ink-muted/60"
+                }`}
               >
                 {page.stamped ? (
                   /* Decorative stamp imprint */
@@ -177,11 +145,7 @@ export function EbookViewer({ page, currentIndex, totalPages, onNext, onPrev }: 
 
               {/* Memo input */}
               <div
-                className="flex items-center gap-2 rounded-[12px] px-3 py-2.5 transition-all focus-within:ring-2 focus-within:ring-[#3B6CF4]/20"
-                style={{
-                  background: "#F8F9FF",
-                  border: "1px solid rgba(59,108,244,0.12)",
-                }}
+                className="flex items-center gap-2 rounded-[12px] px-3 py-2.5 transition-all focus-within:ring-2 focus-within:ring-brand/20 bg-surface-subtle border border-brand/12"
               >
                 <Pencil className="h-3 w-3 shrink-0 text-[#8A91B8]"/>
                 <input
@@ -214,15 +178,7 @@ export function EbookViewer({ page, currentIndex, totalPages, onNext, onPrev }: 
         <button
           onClick={onPrev}
           disabled={currentIndex === 0}
-          className="flex items-center gap-1.5 rounded-full px-5 py-2.5 text-sm font-bold transition-all duration-200 active:scale-95 disabled:opacity-40"
-          style={{
-            background: "rgba(255,255,255,0.85)",
-            backdropFilter: "blur(16px)",
-            WebkitBackdropFilter: "blur(16px)",
-            border: "1px solid rgba(59,108,244,0.15)",
-            color: "#3B6CF4",
-            boxShadow: "0 4px 12px rgba(59,108,244,0.12)",
-          }}
+          className="flex items-center gap-1.5 rounded-full px-5 py-2.5 text-sm font-bold transition-all duration-200 active:scale-95 disabled:opacity-40 glass border border-brand/15 text-brand shadow-brand-soft"
         >
           <ChevronLeft className="h-4 w-4"/>
           Prev
@@ -249,12 +205,7 @@ export function EbookViewer({ page, currentIndex, totalPages, onNext, onPrev }: 
         <button
           onClick={onNext}
           disabled={currentIndex === totalPages - 1}
-          className="flex items-center gap-1.5 rounded-full px-5 py-2.5 text-sm font-bold transition-all duration-200 active:scale-95 disabled:opacity-40"
-          style={{
-            background: "linear-gradient(135deg, #3B6CF4, #2952D9)",
-            color: "#FFF",
-            boxShadow: "inset 0 2px 4px rgba(255,255,255,0.25), 0 6px 20px rgba(59,108,244,0.40)",
-          }}
+          className="flex items-center gap-1.5 rounded-full px-5 py-2.5 text-sm font-bold transition-all duration-200 active:scale-95 disabled:opacity-40 gradient-jeju text-white shadow-[inset_0_2px_4px_rgba(255,255,255,0.25),0_6px_20px_rgba(59,108,244,0.40)]"
         >
           Next
           <ChevronRight className="h-4 w-4"/>

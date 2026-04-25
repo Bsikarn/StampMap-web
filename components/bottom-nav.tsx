@@ -3,6 +3,7 @@
 import { BookOpen, Gift, MapIcon, User, Settings } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 // Navigation items configuration: route → label + icon
 const navItems = [
@@ -17,6 +18,7 @@ const navItems = [
  * BottomNav — Premium glassmorphism floating navigation bar.
  * Center "Map" item uses a clay 3D raised button style.
  * Active state uses Jeju brand color with subtle glow.
+ * Migrated to use Tailwind v4 utilities and cn() helper.
  */
 export function BottomNav() {
   const pathname = usePathname();
@@ -37,15 +39,7 @@ export function BottomNav() {
 
       {/* Floating frosted-glass nav container */}
       <nav
-        className="flex items-center justify-around rounded-[28px] px-3 py-2"
-        style={{
-          background: "rgba(255, 255, 255, 0.88)",
-          backdropFilter: "blur(32px) saturate(200%)",
-          WebkitBackdropFilter: "blur(32px) saturate(200%)",
-          border: "1px solid rgba(255, 255, 255, 0.70)",
-          boxShadow:
-            "0 8px 32px rgba(59, 108, 244, 0.12), 0 2px 8px rgba(0,0,0,0.04)",
-        }}
+        className="glass-heavy flex items-center justify-around rounded-[28px] px-3 py-2 shadow-soft-md border border-white/70"
       >
         {navItems.map((item) => {
           const active   = activeId === item.id;
@@ -61,23 +55,21 @@ export function BottomNav() {
                 onClick={(e) => {
                   if (active) { e.preventDefault(); window.location.href = item.href; }
                 }}
-                className="relative flex h-[52px] w-[52px] items-center justify-center rounded-2xl transition-all duration-200 active:scale-95"
-                style={{
-                  background: active
-                    ? "linear-gradient(135deg, #3B6CF4 0%, #2952D9 100%)"
-                    : "linear-gradient(135deg, #EEF2FF 0%, #E0E8FE 100%)",
-                  boxShadow: active
-                    ? "inset 0 4px 8px rgba(255,255,255,0.35), inset 0 -3px 6px rgba(0,0,0,0.15), 0 8px 24px rgba(59,108,244,0.40)"
-                    : "inset 0 3px 6px rgba(255,255,255,0.70), inset 0 -2px 4px rgba(174,182,220,0.40), 0 4px 12px rgba(59,108,244,0.10)",
-                }}
+                className={cn(
+                  "relative flex h-[52px] w-[52px] items-center justify-center rounded-2xl",
+                  "transition-all duration-200 active:scale-95",
+                  active
+                    ? "gradient-jeju shadow-soft-md shadow-[inset_0_4px_8px_rgba(255,255,255,0.35),inset_0_-3px_6px_rgba(0,0,0,0.15),0_8px_24px_rgba(59,108,244,0.40)]"
+                    : "bg-gradient-to-br from-brand-light to-[#E0E8FE] shadow-[inset_0_3px_6px_rgba(255,255,255,0.70),inset_0_-2px_4px_rgba(174,182,220,0.40),0_4px_12px_rgba(59,108,244,0.10)]"
+                )}
               >
                 <item.icon
-                  className={`h-6 w-6 transition-all ${active ? "text-white" : "text-[#3B6CF4]"}`}
+                  className={cn("h-6 w-6 transition-all", active ? "text-white" : "text-brand")}
                   strokeWidth={active ? 2.5 : 2}
                 />
                 {/* Active glow ring */}
                 {active && (
-                  <div className="absolute -inset-1 rounded-[26px] bg-[#3B6CF4]/20 blur-sm" />
+                  <div className="absolute -inset-1 rounded-[26px] bg-brand/20 blur-sm" />
                 )}
               </Link>
             );
@@ -91,9 +83,11 @@ export function BottomNav() {
               onClick={(e) => {
                 if (active) { e.preventDefault(); window.location.href = item.href; }
               }}
-              className={`flex flex-col items-center gap-0.5 rounded-2xl px-3.5 py-2 transition-all duration-200 ${
-                active ? "text-[#3B6CF4]" : "text-[#8A91B8] hover:text-[#3D4875]"
-              }`}
+              className={cn(
+                "flex flex-col items-center gap-0.5 rounded-2xl px-3.5 py-2",
+                "transition-all duration-200",
+                active ? "text-brand" : "text-ink-muted hover:text-ink-secondary"
+              )}
             >
               {/* Icon with subtle active indicator */}
               <div className="relative">
@@ -103,10 +97,10 @@ export function BottomNav() {
                 />
                 {/* Active dot indicator */}
                 {active && (
-                  <div className="absolute -bottom-0.5 left-1/2 h-[3px] w-[3px] -translate-x-1/2 rounded-full bg-[#3B6CF4]" />
+                  <div className="absolute -bottom-0.5 left-1/2 h-[3px] w-[3px] -translate-x-1/2 rounded-full bg-brand" />
                 )}
               </div>
-              <span className={`text-[10px] font-semibold transition-all ${active ? "opacity-100" : "opacity-60"}`}>
+              <span className={cn("text-[10px] font-semibold transition-all", active ? "opacity-100" : "opacity-60")}>
                 {item.label}
               </span>
             </Link>
