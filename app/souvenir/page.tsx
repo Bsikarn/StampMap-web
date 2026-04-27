@@ -1,19 +1,12 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { SouvenirCard, type SouvenirItem } from "@/components/souvenir/souvenir-card";
+import { useState, useMemo, useEffect } from "react";
+import { SouvenirCard } from "@/components/souvenir/souvenir-card";
+import { useStampStore, type SouvenirItem } from "@/store/use-stamp-store";
 import { ExchangeModal } from "@/components/souvenir/exchange-modal";
 import { Gift, Sparkles } from "lucide-react";
 
-// Static souvenir data — ideally fetched from an API
-const SOUVENIR_DATA: SouvenirItem[] = [
-  { id: 1, name: "Jeju Dol Hareubang Figurine", image: "🗿", stampsRequired: 10, inStock: true },
-  { id: 2, name: "Hallasan Enamel Pin", image: "📍", stampsRequired: 5, inStock: true },
-  { id: 3, name: "Tangerine Tea Collection", image: "🍊", stampsRequired: 8, inStock: false },
-  { id: 4, name: "Haenyeo Postcard Set", image: "🏊‍♀️", stampsRequired: 3, inStock: true },
-  { id: 5, name: "Jeju Lava Stone Bracelet", image: "🪨", stampsRequired: 15, inStock: true },
-  { id: 6, name: "Cherry Blossom Bookmark", image: "🌸", stampsRequired: 4, inStock: false },
-];
+
 
 /**
  * SouvenirPage — Stamp exchange marketplace.
@@ -21,11 +14,16 @@ const SOUVENIR_DATA: SouvenirItem[] = [
  * Jeju Island themed rewards with stamp-based redemption.
  */
 export default function SouvenirPage() {
+  const { souvenirs, fetchSouvenirs, isLoadingSouvenirs, collectedStamps, selectedMap } = useStampStore();
   const [showExchangeModal, setShowExchangeModal] = useState(false);
   const [selectedSouvenir, setSelectedSouvenir] = useState<SouvenirItem | null>(null);
 
+  useEffect(() => {
+    fetchSouvenirs(); // Fetch all souvenirs regardless of selected map
+  }, [fetchSouvenirs]);
+
   // Memoized to avoid unnecessary re-renders on unrelated state changes
-  const items = useMemo(() => SOUVENIR_DATA, []);
+  const items = useMemo(() => souvenirs, [souvenirs]);
 
   const handleOpenExchangeModal = (item: SouvenirItem) => {
     setSelectedSouvenir(item);
@@ -61,7 +59,7 @@ export default function SouvenirPage() {
             <div className="flex items-center gap-1.5">
               <div className="h-2 w-2 rounded-full bg-brand" />
               <span className="text-[11px] font-bold text-ink-secondary">
-                3 stamps collected
+                {collectedStamps.length} stamps collected
               </span>
             </div>
           </div>

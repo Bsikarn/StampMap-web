@@ -9,10 +9,13 @@ import {
   CheckCircle2, Share2, Image as ImageIcon, XIcon
 } from "lucide-react";
 import { StarRating } from "@/components/location/star-rating";
-import { locationData, locationReviews as reviews, type ReviewData } from "@/lib/mock-data";
+import { useStampStore } from "@/store/use-stamp-store";
 import { cn } from "@/lib/utils";
 
-export function LocationContent() {
+export function LocationContent({ locationId }: { locationId: string }) {
+  const { locations, collectedStamps } = useStampStore();
+  const location = locations.find((l) => l.id === locationId);
+  const isCollected = collectedStamps.some((s) => s.locationId === locationId);
   const [userRating, setUserRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
   const [likedIds, setLikedIds] = useState<number[]>([]);
@@ -48,13 +51,13 @@ export function LocationContent() {
           {/* Location Name & Distance */}
           <div className="mt-5 flex flex-col items-center text-center">
             <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 leading-tight">
-              {locationData.name}
+              {location?.name || "Unknown Location"}
             </h1>
             <div className="mt-1.5 flex items-center justify-center gap-1.5 flex-wrap">
               <p className="text-sm sm:text-base font-medium text-slate-500">
-                Jeju Official Spot • {locationData.distance} away
+                Official Spot • {location?.distance || "2.4 km"} away
               </p>
-              {locationData.collected && (
+              {isCollected && (
                 <div className="flex items-center gap-1 rounded-full bg-success/10 px-2.5 py-0.5 shadow-sm ring-1 ring-success/25 ml-1">
                   <CheckCircle2 className="h-3 w-3 text-success" />
                   <span className="text-[11px] font-bold text-success uppercase tracking-wide">Collected</span>
@@ -67,7 +70,7 @@ export function LocationContent() {
           <div className="mt-6 flex flex-wrap items-center justify-center gap-2 sm:gap-3">
             <button className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-slate-50 px-3 py-2.5 sm:px-4 sm:py-3 text-[13px] sm:text-sm font-semibold text-slate-700 shadow-sm ring-1 ring-black/[0.04] transition-colors hover:bg-slate-100">
               <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
-              {locationData.rating} ({locationData.reviewsCount})
+              {location?.rating || 0} ({location?.reviewsCount || 0})
             </button>
             <button className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-slate-50 px-3 py-2.5 sm:px-4 sm:py-3 text-[13px] sm:text-sm font-semibold text-slate-700 shadow-sm ring-1 ring-black/[0.04] transition-colors hover:bg-slate-100">
               <Bell className="h-4 w-4 text-brand" />
@@ -88,11 +91,11 @@ export function LocationContent() {
         <section className="mt-4 px-2">
           <h2 className="text-lg font-bold text-slate-900">About this place</h2>
           <p className="mt-2 text-sm leading-relaxed text-slate-700">
-            {locationData.description}
+            {location?.description || "No description available."}
           </p>
           <div className="mt-3 flex items-center justify-between rounded-xl glass p-3 text-sm shadow-sm ring-1 ring-white/60">
             <span className="font-semibold text-slate-700">Opening Hours</span>
-            <span className="font-medium text-brand">{locationData.openTime}</span>
+            <span className="font-medium text-brand">{location?.openTime || "09:00 AM - 06:00 PM"}</span>
           </div>
         </section>
 
@@ -120,30 +123,7 @@ export function LocationContent() {
 
           {/* Review cards */}
           <div className="space-y-3">
-            {reviews.map((r: ReviewData) => (
-              <div key={r.id} className="rounded-2xl glass p-4 shadow-sm ring-1 ring-white/60">
-                <div className="flex items-center gap-3">
-                  <div className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold text-white shadow-sm ${r.avatarColor}`}>
-                    {r.avatar}
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-base font-bold text-slate-900 leading-none">{r.user}</p>
-                    <p className="mt-1 text-xs font-medium text-slate-400">{r.date}</p>
-                  </div>
-                  <StarRating rating={r.rating} size={14} />
-                </div>
-                <p className="mt-3 text-sm leading-relaxed text-slate-700">{r.comment}</p>
-                <div className="mt-3 flex items-center gap-4 border-t border-white/40 pt-3">
-                  <button
-                    onClick={() => toggleLike(r.id)}
-                    className={cn("flex items-center gap-1.5 text-xs font-bold transition-all", likedIds.includes(r.id) ? "text-brand" : "text-slate-500 hover:text-slate-800")}
-                  >
-                    <ThumbsUp className={cn("h-4 w-4", likedIds.includes(r.id) ? "fill-brand" : "")} />
-                    {r.likes + (likedIds.includes(r.id) ? 1 : 0)} Helpful
-                  </button>
-                </div>
-              </div>
-            ))}
+            <div className="text-center text-sm text-slate-500 py-4">No reviews yet. Be the first to review!</div>
           </div>
         </section>
       </div>

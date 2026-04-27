@@ -1,17 +1,16 @@
 "use client";
 
-import { BookOpen, Gift, MapIcon, User, Settings } from "lucide-react";
+import { BookOpen, Gift, MapIcon, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 // Navigation items configuration: route → label + icon
 const navItems = [
+  { id: "map",      label: "Map",      icon: MapIcon,  href: "/" },
   { id: "book",     label: "Book",     icon: BookOpen, href: "/book" },
   { id: "souvenir", label: "Souvenir", icon: Gift,     href: "/souvenir" },
-  { id: "map",      label: "Map",      icon: MapIcon,  href: "/" },
-  { id: "profile",  label: "Profile",  icon: User,     href: "/auth" },
-  { id: "settings", label: "Settings", icon: Settings, href: "/settings" },
+  { id: "profile",  label: "Profile",  icon: User,     href: "/profile" },
 ];
 
 /**
@@ -24,14 +23,10 @@ export function BottomNav() {
   const pathname = usePathname();
 
   // Determine active tab from current route
-  const activeId = (() => {
-    if (pathname === "/")                 return "map";
-    if (pathname.startsWith("/book"))     return "book";
-    if (pathname.startsWith("/souvenir")) return "souvenir";
-    if (pathname.startsWith("/auth"))     return "profile";
-    if (pathname.startsWith("/settings")) return "settings";
-    return "map";
-  })();
+  let activeId = "map";
+  if (pathname.startsWith("/book")) activeId = "book";
+  else if (pathname.startsWith("/souvenir")) activeId = "souvenir";
+  else if (pathname.startsWith("/auth") || pathname.startsWith("/profile")) activeId = "profile";
 
   return (
     /* Outer wrapper: centered, max-width constrained */
@@ -43,10 +38,10 @@ export function BottomNav() {
       >
         {navItems.map((item) => {
           const active   = activeId === item.id;
-          const isCenter = item.id === "map";
+          const isMap    = item.id === "map";
 
-          // Center Map button — claymorphism 3D raised style
-          if (isCenter) {
+          // Map button — claymorphism 3D raised style
+          if (isMap) {
             return (
               <Link
                 key={item.id}

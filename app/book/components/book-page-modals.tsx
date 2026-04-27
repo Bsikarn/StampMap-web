@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/select";
 import {
   BookOpen, Hash, Globe, Stamp, Calendar,
-  Plus, Smartphone, CheckCircle2, ChevronRight, Sparkles,
+  Plus, Smartphone, CheckCircle2, ChevronRight, Sparkles, Trash2,
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -23,7 +23,6 @@ import { cn } from "@/lib/utils";
 interface StampBook {
   id: string;
   country: string;
-  region: string;
   bookNumber: number;
   stampsCollected: number;
   totalStamps: number;
@@ -33,7 +32,6 @@ interface StampBook {
 interface CountryOption {
   id: string;
   name: string;
-  region: string;
 }
 
 interface BookPageModalsProps {
@@ -43,6 +41,9 @@ interface BookPageModalsProps {
   showSuccessModal: boolean; setShowSuccessModal: (open: boolean) => void;
   stampBooks: StampBook[];
   availableCountries: CountryOption[];
+  onSelectBook: (id: string) => void;
+  onAddBook: (id: string) => void;
+  onDeleteBook: (id: string) => void;
 }
 
 /**
@@ -54,9 +55,11 @@ export function BookPageModals({
   showAddBook, setShowAddBook,
   showNfcModal, setShowNfcModal,
   showSuccessModal, setShowSuccessModal,
-  stampBooks, availableCountries,
+  stampBooks, availableCountries, onSelectBook, onAddBook, onDeleteBook,
 }: BookPageModalsProps) {
   const [selectedCountry, setSelectedCountry] = useState("");
+
+  console.log("BookPageModals props:", { stampBooks, availableCountries, selectedCountry });
 
   const modalClassName = "glass-heavy border border-white/80 shadow-[0_24px_80px_rgba(59,108,244,0.20),0_8px_24px_rgba(0,0,0,0.06)]";
   const headerClassName = "bg-gradient-to-br from-brand/6 to-accent-purple/5 border-b border-brand/8";
@@ -81,7 +84,7 @@ export function BookPageModals({
             {stampBooks.map((book) => (
               <button
                 key={book.id}
-                onClick={() => setShowChangeBook(false)}
+                onClick={() => { onSelectBook(book.id); setShowChangeBook(false); }}
                 className="flex w-full items-center gap-3 rounded-[18px] p-3.5 text-left transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] bg-[#F8F9FF] border border-brand/8 shadow-[0_2px_8px_rgba(59,108,244,0.05)]"
               >
                 {/* Book icon */}
@@ -102,18 +105,20 @@ export function BookPageModals({
                     </span>
                   </div>
                   <div className="flex items-center gap-3 text-[10px] font-medium text-ink-muted">
-                    <span className="flex items-center gap-0.5"><Globe className="h-3 w-3" />{book.region}</span>
                     <span className="flex items-center gap-0.5 text-brand">
                       <Stamp className="h-3 w-3" />{book.stampsCollected}/{book.totalStamps}
                     </span>
-                    {book.lastStampDate && (
-                      <span className="flex items-center gap-0.5">
-                        <Calendar className="h-3 w-3" />{book.lastStampDate}
-                      </span>
-                    )}
                   </div>
                 </div>
-                <ChevronRight className="h-4 w-4 shrink-0 text-[#C4CAE8]" />
+                <div className="flex items-center gap-2">
+                  <ChevronRight className="h-4 w-4 shrink-0 text-[#C4CAE8]" />
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); onDeleteBook(book.id); }}
+                    className="p-1.5 rounded-md hover:bg-red-100 text-red-500 transition-colors"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
               </button>
             ))}
           </div>
@@ -146,7 +151,7 @@ export function BookPageModals({
                 <SelectContent className="rounded-[18px]">
                   {availableCountries.map((country) => (
                     <SelectItem key={country.id} value={country.id}>
-                      {country.name} — {country.region}
+                      {country.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -155,7 +160,11 @@ export function BookPageModals({
 
             <button
               disabled={!selectedCountry}
-              onClick={() => { setShowAddBook(false); setSelectedCountry(""); }}
+              onClick={() => { 
+                onAddBook(selectedCountry);
+                setShowAddBook(false); 
+                setSelectedCountry(""); 
+              }}
               className="w-full rounded-[16px] py-3.5 text-sm font-bold text-white transition-all active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed gradient-jeju shadow-[inset_0_3px_6px_rgba(255,255,255,0.25),0_8px_24px_rgba(59,108,244,0.40)]"
             >
               <span className="flex items-center justify-center gap-2">

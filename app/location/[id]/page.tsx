@@ -2,10 +2,11 @@
 
 import { BottomNav } from "@/components/bottom-nav";
 import { useRouter } from "next/navigation";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, use } from "react";
 import { LocationContent } from "@/components/location/location-content";
 
-export default function LocationDetailPage({ params }: { params: { id: string } }) {
+export default function LocationDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = use(params);
   const router = useRouter();
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -95,7 +96,7 @@ export default function LocationDetailPage({ params }: { params: { id: string } 
         </div>
 
         {/* Centralized Location View Content & 3D Viewer */}
-        <LocationContent />
+        <LocationContent locationId={resolvedParams.id} />
 
       </div>
 

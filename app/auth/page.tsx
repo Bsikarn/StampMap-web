@@ -5,11 +5,61 @@ import { Input } from "@/components/ui/input";
 import { Eye, EyeOff, Mail, Lock, User, ArrowRight, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
+import { useStampStore } from "@/store/use-stamp-store";
 
 export default function AuthPage() {
   const [tab, setTab]               = useState<"login"|"signup">("login");
   const [showPwd, setShowPwd]       = useState(false);
   const [form, setForm]             = useState({ name: "", email: "", password: "" });
+  const [loading, setLoading]       = useState(false);
+  const [errorMsg, setErrorMsg]     = useState("");
+  
+  const router = useRouter();
+  const supabase = createClient();
+  const { setUserId } = useStampStore();
+
+  const handleAuth = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrorMsg("");
+
+    try {
+      if (tab === "signup") {
+        const { data, error } = await supabase.auth.signUp({
+          email: form.email,
+          password: form.password,
+        });
+        if (error) throw error;
+        
+        if (data?.user) {
+          await fetch('/api/auth/sync', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: data.user.id, email: data.user.email })
+          });
+          setUserId(data.user.id);
+          router.push("/");
+        }
+      } else {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: form.email,
+          password: form.password,
+        });
+        if (error) throw error;
+        
+        if (data?.user) {
+          setUserId(data.user.id);
+          router.push("/");
+        }
+      }
+    } catch (err: any) {
+      setErrorMsg(err.message || "An error occurred");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="relative flex min-h-dvh flex-col items-center justify-center overflow-hidden bg-slate-50 px-5 py-12">
@@ -48,7 +98,13 @@ export default function AuthPage() {
         </div>
 
         {/* Form */}
-        <form className="mt-5 space-y-3.5" onSubmit={(e) => e.preventDefault()}>
+        <form className="mt-5 space-y-3.5" onSubmit={handleAuth}>
+          {errorMsg && (
+            <div className="rounded-lg bg-red-50 p-3 text-xs text-red-600">
+              {errorMsg}
+            </div>
+          )}
+          
           {tab === "signup" && (
             <div className="animate-stamp-fade-in">
               <label className="mb-1 block text-xs font-semibold text-slate-600">Full Name</label>
@@ -90,10 +146,10 @@ export default function AuthPage() {
             </div>
           </div>
 
-          <Button type="submit"
-            className="mt-1 w-full rounded-xl bg-brand py-5 text-sm font-semibold text-white hover:bg-blue-700">
-            {tab === "login" ? "Log in" : "Create account"}
-            <ArrowRight className="ml-2 h-4 w-4"/>
+          <Button type="submit" disabled={loading}
+            className="mt-1 w-full rounded-xl bg-brand py-5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-70">
+            {loading ? "Please wait..." : (tab === "login" ? "Log in" : "Create account")}
+            {!loading && <ArrowRight className="ml-2 h-4 w-4"/>}
           </Button>
         </form>
 

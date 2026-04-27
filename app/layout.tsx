@@ -2,6 +2,9 @@ import type { Metadata, Viewport } from "next";
 import { Outfit } from "next/font/google";
 import "./globals.css";
 import { BottomNav } from "@/components/bottom-nav";
+import { AuthWrapper } from "@/components/auth/AuthWrapper";
+
+
 
 /**
  * Primary Font: Outfit — Geometric Sans-serif
@@ -62,9 +65,11 @@ export default function RootLayout({
       <body className={`${outfit.variable} antialiased text-ink`}>
         {/* Global layout: full viewport, flex column, centered on wide screens */}
         <div className="mx-auto min-h-dvh flex flex-col w-full relative">
-          {children}
-          {modal}
-          <BottomNav />
+          <AuthWrapper>
+            {children}
+            {modal}
+            <BottomNav />
+          </AuthWrapper>
         </div>
       </body>
     </html>

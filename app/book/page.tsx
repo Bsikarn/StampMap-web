@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useStampStore } from "@/store/use-stamp-store";
 import { Button } from "@/components/ui/button";
-import { Wifi, Sparkles } from "lucide-react";
+import { Wifi, Sparkles, BookOpen } from "lucide-react";
 
 // Extracted Components
 import { BookCover } from "./components/book-cover";
@@ -12,55 +12,71 @@ import { ProgressCard } from "./components/progress-card";
 import { EbookViewer } from "./components/ebook-viewer";
 import { BookPageModals } from "./components/book-page-modals";
 
-// Static data — in production this would come from an API/store
-const stampBooks = [
-  { id: "jeju-1", country: "Jeju Island", region: "South Korea", bookNumber: 1, stampsCollected: 3, totalStamps: 25, lastStampDate: "2025-12-17" },
-  { id: "taiwan-1", country: "Taiwan", region: "East Asia", bookNumber: 1, stampsCollected: 8, totalStamps: 20, lastStampDate: "2025-11-24" },
-  { id: "japan-1", country: "Japan", region: "East Asia", bookNumber: 1, stampsCollected: 0, totalStamps: 30, lastStampDate: "" },
-];
-
-const stampPages = [
-  {
-    id: "s1",
-    locationName: "Geumryongsa",
-    koreanName: "금룡사",
-    description: "Geumryongsa Temple, located in Gimnyeong-ri, eastern Jeju Island, is a natural temple where the harmonious harmony of the blue dragon and yellow dragon, formed by the intertwining of rocky outcrops and pine trees, creates a breathtaking landscape.",
-    stampDate: "2024-01-15",
-    stamped: true,
-    stampImage: "true",
-  },
-  {
-    id: "s2",
-    locationName: "Seongsan Ilchulbong",
-    koreanName: "성산 일출봉",
-    description: "UNESCO World Heritage sunrise peak on Jeju's eastern shore. A dramatic tuff cone formed by hydrovolcanic eruptions, offering panoramic views of the sunrise over the sea.",
-    stampDate: "2024-01-16",
-    stamped: true,
-    stampImage: "true",
-  },
-  {
-    id: "s3",
-    locationName: "Manjanggul Cave",
-    koreanName: "만장굴",
-    description: "One of the finest lava tunnels in the world, stretching 7.4km underground beneath Jeju Island. A UNESCO World Natural Heritage site with unique geological formations.",
-    stampDate: "",
-    stamped: false,
-  },
-];
-
-const availableCountries = [
-  { id: "jeju", name: "Jeju Island", region: "South Korea" },
-  { id: "taiwan", name: "Taiwan", region: "East Asia" },
-  { id: "japan", name: "Japan", region: "East Asia" },
-];
-
 /**
  * StampBookPage — Digital Passport & Stamp Book screen.
  * Shows the 3D book cover or an in-book ebook viewer with page navigation.
  * Premium Glassmorphism + Claymorphism aesthetic.
  */
 export default function StampBookPage() {
-  const { collectedStamps, totalStamps } = useStampStore();
+  const { 
+    collectedStamps, totalStamps, locations, availableMaps, userBooks, selectedMap, 
+    fetchStamps, fetchLocations, addStamp, fetchAvailableMaps, fetchUserBooks, deleteUserBook, addUserBook
+  } = useStampStore();
+  
+  // Book specific state
+  const [selectedBook, setSelectedBook] = useState(selectedMap);
+
+  useEffect(() => {
+    fetchAvailableMaps();
+    fetchUserBooks();
+  }, [fetchAvailableMaps, fetchUserBooks]);
+
+  // Sync selectedBook with selectedMap when it changes
+  useEffect(() => {
+    if (selectedMap && !userBooks.length) {
+      setSelectedBook(selectedMap);
+    }
+  }, [selectedMap, userBooks.length]);
+
+  useEffect(() => {
+    if (userBooks.length > 0) {
+      const exists = userBooks.find(b => b.id === selectedBook?.id);
+      if (!exists) {
+        setSelectedBook(userBooks[0]);
+      }
+    } else {
+      setSelectedBook(null as any);
+    }
+  }, [userBooks]);
+
+  useEffect(() => {
+    if (selectedBook && selectedBook.name) {
+      fetchStamps(selectedBook.name);
+      fetchLocations(selectedBook.name);
+    }
+  }, [fetchStamps, fetchLocations, selectedBook?.name]);
+
+  const stampBooks = userBooks.map((map) => ({
+    id: map.id,
+    country: map.name,
+    bookNumber: 1,
+    stampsCollected: map.id === selectedBook?.id ? collectedStamps.length : 0,
+    totalStamps: map.id === selectedBook?.id ? totalStamps : 0,
+    lastStampDate: collectedStamps.length > 0 ? collectedStamps[0].collectedAt : "",
+  }));
+
+  const stampPages = locations.map((loc) => {
+    const stamp = collectedStamps.find((s) => s.locationId === loc.id);
+    return {
+      id: loc.id,
+      locationName: loc.name,
+      koreanName: (loc as any).koreanName || "",
+      description: (loc as any).description || "",
+      stampDate: stamp ? new Date(stamp.collectedAt).toISOString().split('T')[0] : "",
+      stamped: !!stamp,
+      stampImage: stamp ? "true" : "",
+    };
+  });
 
   // View toggle state
   const [showEbook, setShowEbook] = useState(false);
@@ -74,6 +90,27 @@ export default function StampBookPage() {
 
   const handleNextPage = () => { if (currentPage < stampPages.length - 1) setCurrentPage(p => p + 1); };
   const handlePrevPage = () => { if (currentPage > 0) setCurrentPage(p => p - 1); };
+
+  const handleNfcCollect = () => {
+    setShowNfcModal(true);
+    setTimeout(() => {
+      setShowNfcModal(false);
+      // Simulate random stamp collection
+      const uncollected = locations.filter(loc => !collectedStamps.some(s => s.locationId === loc.id));
+      if (uncollected.length > 0) {
+        const randomLoc = uncollected[Math.floor(Math.random() * uncollected.length)];
+        addStamp({
+          id: Math.random().toString(),
+          locationId: randomLoc.id,
+          locationName: randomLoc.name,
+          image: "🏛️",
+          description: "Collected via NFC simulation",
+          collectedAt: new Date().toISOString()
+        });
+      }
+      setShowSuccessModal(true);
+    }, 2000);
+  };
 
   return (
     <div className="relative min-h-dvh bg-transparent pb-28 selection:bg-[#3B6CF4]/15 animate-in fade-in slide-in-from-right-4 duration-300 ease-out">
@@ -105,10 +142,7 @@ export default function StampBookPage() {
             {!showEbook && (
               <button
                 id="nfc-collect-btn"
-                onClick={() => {
-                  setShowNfcModal(true);
-                  setTimeout(() => { setShowNfcModal(false); setShowSuccessModal(true); }, 2000);
-                }}
+                onClick={handleNfcCollect}
                 className="flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold text-brand transition-all active:scale-95 glass-tint-blue"
               >
                 <Wifi className="h-3.5 w-3.5" />
@@ -124,31 +158,49 @@ export default function StampBookPage() {
 
         {showEbook ? (
           /* ── Ebook viewer ── */
-          <EbookViewer
-            page={stampPages[currentPage]}
-            currentIndex={currentPage}
-            totalPages={stampPages.length}
-            onNext={handleNextPage}
-            onPrev={handlePrevPage}
-          />
+          stampPages.length > 0 ? (
+            <EbookViewer
+              page={stampPages[currentPage]}
+              currentIndex={currentPage}
+              totalPages={stampPages.length}
+              onNext={handleNextPage}
+              onPrev={handlePrevPage}
+            />
+          ) : (
+            <div className="flex h-64 items-center justify-center text-ink-muted">
+              Loading pages...
+            </div>
+          )
         ) : (
           /* ── Book cover + progress ── */
           <div className="flex w-full flex-col items-center animate-stamp-slide-up">
 
-            {/* Book cover card */}
-            <BookCover
-              onClick={() => { setCurrentPage(0); setShowEbook(true); }}
-              title="UN-OLD-JEJU"
-              subtitle="STAMPBOOK"
-              date="2024-01-15"
-            />
+            {userBooks.length > 0 && selectedBook ? (
+              <>
+                <BookCover
+                  onClick={() => { setCurrentPage(0); setShowEbook(true); }}
+                  title={selectedBook.name.toUpperCase()}
+                  subtitle="STAMPBOOK"
+                  date={new Date().toISOString().split('T')[0]}
+                />
 
-            {/* Progress widget */}
-            <ProgressCard
-              date="2024-01-15"
-              collected={collectedStamps.length}
-              total={totalStamps}
-            />
+                <ProgressCard
+                  date="2024-01-15"
+                  collected={collectedStamps.length}
+                  total={totalStamps}
+                />
+              </>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-20 text-center opacity-80">
+                 <div className="h-20 w-20 rounded-full bg-slate-100 flex items-center justify-center mb-4">
+                    <BookOpen className="h-8 w-8 text-slate-400" />
+                 </div>
+                 <h2 className="text-xl font-bold text-slate-700">No Stamp Books Yet</h2>
+                 <p className="text-sm text-slate-500 mt-2 max-w-[250px]">
+                    Create a new digital passport to start collecting stamps on your journey.
+                 </p>
+              </div>
+            )}
 
             {/* Action buttons */}
             <div className="mt-6 flex w-full max-w-[340px] flex-col gap-3">
@@ -183,7 +235,19 @@ export default function StampBookPage() {
         showNfcModal={showNfcModal} setShowNfcModal={setShowNfcModal}
         showSuccessModal={showSuccessModal} setShowSuccessModal={setShowSuccessModal}
         stampBooks={stampBooks}
-        availableCountries={availableCountries}
+        availableCountries={availableMaps}
+        onSelectBook={(id) => {
+          const map = userBooks.find(m => m.id === id);
+          if (map) setSelectedBook(map);
+        }}
+        onAddBook={(id) => addUserBook(id)}
+        onDeleteBook={(id) => {
+          deleteUserBook(id);
+          if (selectedBook?.id === id) {
+             const remaining = userBooks.filter(b => b.id !== id);
+             setSelectedBook(remaining.length > 0 ? remaining[0] : null as any);
+          }
+        }}
       />
     </div>
   );

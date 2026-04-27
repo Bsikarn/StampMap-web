@@ -1,12 +1,14 @@
 import React from "react";
 import Link from "next/link";
+import { Marker } from "react-map-gl/maplibre";
 
 export interface MapPinData {
   id: string;
   name: string;
-  x: number;
-  y: number;
+  latitude: number;
+  longitude: number;
   collected: boolean;
+  [key: string]: any;
 }
 
 interface MapPinsProps {
@@ -23,13 +25,17 @@ export const MapPins = React.memo(({ pins }: MapPinsProps) => {
   return (
     <>
       {pins.map((pin) => (
-        <Link
+        <Marker
           key={pin.id}
-          href={`/location/${pin.id}`}
-          style={{ left: `${pin.x}%`, top: `${pin.y}%` }}
-          className="group absolute -translate-x-1/2 -translate-y-full"
-          aria-label={pin.name}
+          longitude={pin.longitude}
+          latitude={pin.latitude}
+          anchor="bottom"
         >
+          <Link
+            href={`/location/${pin.id}`}
+            className="group relative block -translate-y-1"
+            aria-label={pin.name}
+          >
           {/* ── Pin drop shadow (depth) ── */}
           <div className="absolute bottom-0 left-1/2 h-2 w-6 -translate-x-1/2 translate-y-2 rounded-full bg-black/10 blur-[3px]" />
 
@@ -101,6 +107,7 @@ export const MapPins = React.memo(({ pins }: MapPinsProps) => {
             <div className="mx-auto h-2 w-2 -mt-1 rotate-45 bg-[rgba(13,18,56,0.80)]" style={{ marginLeft: "calc(50% - 4px)" }}/>
           </div>
         </Link>
+        </Marker>
       ))}
     </>
   );

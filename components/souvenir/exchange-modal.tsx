@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Sparkles, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SouvenirItem } from "./souvenir-card";
+import { useStampStore } from "@/store/use-stamp-store";
 
 interface ExchangeModalProps {
   isOpen: boolean;
@@ -33,6 +34,7 @@ interface ExchangeModalProps {
  * Migrated from inline styles to Tailwind v4 design token utilities.
  */
 export function ExchangeModal({ isOpen, onOpenChange, selectedSouvenir }: ExchangeModalProps) {
+  const { availableMaps } = useStampStore();
   const [passportBook, setPassportBook] = useState("");
   const [passportId, setPassportId] = useState("");
   const [exchanged, setExchanged] = useState(false);
@@ -120,9 +122,11 @@ export function ExchangeModal({ isOpen, onOpenChange, selectedSouvenir }: Exchan
                     <SelectValue placeholder="Choose a passport book" />
                   </SelectTrigger>
                   <SelectContent className="rounded-[18px]">
-                    <SelectItem value="jeju">🌋 Jeju Island Passport</SelectItem>
-                    <SelectItem value="taiwan">🏮 Taiwan Passport</SelectItem>
-                    <SelectItem value="japan">⛩️ Japan Passport</SelectItem>
+                    {availableMaps.map((map) => (
+                      <SelectItem key={map.id} value={map.id}>
+                        {map.id === "thailand" ? "🐘" : "🌋"} {map.name} Passport
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>

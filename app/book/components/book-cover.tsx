@@ -22,10 +22,16 @@ export function BookCover({
   subtitle = "STAMPBOOK",
   date     = "2024-01-15",
 }: BookCoverProps) {
+  const isThailand = title === "THAILAND";
+
   return (
     <button
       onClick={onClick}
-      className="group relative w-full max-w-[340px] overflow-hidden rounded-[28px] transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] bg-[linear-gradient(145deg,#FF9A5C_0%,#FF7B42_40%,#E8612A_100%)] shadow-[inset_0_6px_14px_rgba(255,255,255,0.35),inset_0_-4px_8px_rgba(0,0,0,0.15),0_24px_60px_rgba(255,123,66,0.40),0_8px_20px_rgba(0,0,0,0.08)]"
+      className={`group relative w-full max-w-[340px] overflow-hidden rounded-[28px] transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] ${
+        isThailand 
+          ? "bg-[linear-gradient(145deg,#4B62A0_0%,#35487B_40%,#1F2E5B_100%)] shadow-[inset_0_6px_14px_rgba(255,255,255,0.25),inset_0_-4px_8px_rgba(0,0,0,0.25),0_24px_60px_rgba(53,72,123,0.40),0_8px_20px_rgba(0,0,0,0.08)]"
+          : "bg-[linear-gradient(145deg,#FF9A5C_0%,#FF7B42_40%,#E8612A_100%)] shadow-[inset_0_6px_14px_rgba(255,255,255,0.35),inset_0_-4px_8px_rgba(0,0,0,0.15),0_24px_60px_rgba(255,123,66,0.40),0_8px_20px_rgba(0,0,0,0.08)]"
+      }`}
     >
       {/* ── Subtle dot texture ── */}
       <div
@@ -42,7 +48,7 @@ export function BookCover({
         {/* ── Title block ── */}
         <div className="flex flex-col items-center">
           <div className="text-[10px] font-black tracking-[0.35em] uppercase text-white/60 mb-1">
-            JEJU ISLAND
+            {isThailand ? "THAILAND" : "JEJU ISLAND"}
           </div>
           <h2
             className="font-black text-white drop-shadow-md leading-none text-center text-[1.75rem] tracking-wide drop-shadow-[2px_4px_0_rgba(150,60,10,0.40)] [text-shadow:0_1px_0_rgba(255,255,255,0.30)]"
@@ -69,14 +75,21 @@ export function BookCover({
 
           {/* Emblem content */}
           <div className="relative z-10 flex flex-col items-center text-center px-3">
-            {/* Hallasan mountain SVG silhouette */}
-            <svg viewBox="0 0 60 40" width="56" height="36" className="drop-shadow-sm">
-              <path d="M5 38 L20 16 L30 22 L38 8 L55 38 Z" fill="rgba(255,255,255,0.85)" />
-              <path d="M35 12 L38 8 L41 14 Z" fill="white" opacity="0.95" />
-              <circle cx="49" cy="12" r="5" fill="#FFD770" opacity="0.90" />
-            </svg>
+            {/* SVG silhouette depending on country */}
+            {isThailand ? (
+              <svg viewBox="0 0 60 40" width="56" height="36" className="drop-shadow-sm">
+                <path d="M10 38 L25 15 L40 38 Z" fill="rgba(255,255,255,0.85)" />
+                <path d="M30 38 L45 10 L60 38 Z" fill="rgba(255,255,255,0.7)" />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 60 40" width="56" height="36" className="drop-shadow-sm">
+                <path d="M5 38 L20 16 L30 22 L38 8 L55 38 Z" fill="rgba(255,255,255,0.85)" />
+                <path d="M35 12 L38 8 L41 14 Z" fill="white" opacity="0.95" />
+                <circle cx="49" cy="12" r="5" fill="#FFD770" opacity="0.90" />
+              </svg>
+            )}
             <p className="text-[8px] font-black text-white tracking-[0.15em] uppercase leading-tight mt-1">
-              Heritage of<br />Jeju Island
+              Heritage of<br />{isThailand ? "Thailand" : "Jeju Island"}
             </p>
           </div>
         </div>

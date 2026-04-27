@@ -1,59 +1,137 @@
-// prisma/schema.prisma
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
 }
 
+// -----------------------------------------
+// User System (Supabase Auth Target)
+// -----------------------------------------
 model User {
-  id              String           @id @default(uuid())
-  email           String           @unique
-  name            String?
-  collectedStamps CollectedStamp[]
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String?
+  avatarUrl String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  stamps      Stamp[]
+  reviews     Review[]
+  redemptions SouvenirRedemption[]
+  userBooks   UserBook[]
 }
 
-model Zone {
-  id              String           @id @default(uuid())
-  name            String           // e.g., "Hallasan National Park"
-  centerLat       Float            // Center point latitude for Zoom
-  centerLng       Float            // Center point longitude for Zoom
-  boundary        Json             // GeoJSON Polygon data defining the zone
-  locations       Location[]
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+// -----------------------------------------
+// Map & Location Ecosystem
+// -----------------------------------------
+model MapZone {
+  id        String   @id @default(uuid())
+  name      String   @unique // e.g., "Jeju Island"
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  
+  locations Location[]
+  userBooks UserBook[]
+}
+
+model UserBook {
+  id        String   @id @default(uuid())
+  userId    String
+  zoneId    String
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  zone      MapZone  @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, zoneId])
+  @@index([userId])
 }
 
 model Location {
-  id              String           @id @default(uuid())
-  name            String           // e.g., "Jeongbang Waterfall"
-  description     String?
-  latitude        Float
-  longitude       Float
-  category        Category         // Enum: CULTURAL or NATURE
-  zoneId          String
-  zone            Zone             @relation(fields: [zoneId], references: [id])
-  collectedStamps CollectedStamp[]
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  id           String   @id @default(uuid())
+  zoneId       String
+  name         String
+  koreanName   String?
+  description  String   @db.Text
+  rating       Float    @default(0.0)
+  reviewsCount Int      @default(0)
+  distance     String?  // e.g., "2.4 km"
+  openTime     String?  // e.g., "06:00 AM - 06:00 PM"
+  
+  // Coordinates for MapLibre / OpenFreeMap
+  latitude     Float
+  longitude    Float
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  zone    MapZone  @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+  stamps  Stamp[]
+  reviews Review[]
+
+  @@index([zoneId])
 }
 
-model CollectedStamp {
-  id              String   @id @default(uuid())
-  userId          String
-  locationId      String
-  user            User     @relation(fields: [userId], references: [id])
-  location        Location @relation(fields: [locationId], references: [id])
-  collectedAt     DateTime @default(now())
+// -----------------------------------------
+// Interactive Progress (Digital Passport)
+// -----------------------------------------
+model Stamp {
+  id          String   @id @default(uuid())
+  userId      String
+  locationId  String
+  image       String?  // Authentic stamp image URL
+  description String?  // Optional memo
+  collectedAt DateTime @default(now())
 
-  @@unique([userId, locationId]) // A user can only collect a stamp once per location
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  location Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+
+  // A user can only collect one stamp per location
+  @@unique([userId, locationId])
+  @@index([userId])
+  @@index([locationId])
 }
 
-enum Category {
-  CULTURAL
-  NATURE
+model Review {
+  id          String   @id @default(uuid())
+  userId      String
+  locationId  String
+  rating      Int
+  comment     String   @db.Text
+  likes       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  location Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+
+  @@index([locationId])
+}
+
+// -----------------------------------------
+// Souvenir Exchange System
+// -----------------------------------------
+model Souvenir {
+  id             String   @id @default(uuid())
+  name           String
+  image          String   // e.g., emoji "🗿" or URL
+  stampsRequired Int
+  inStock        Boolean  @default(true)
+  createdAt      DateTime @default(now())
+
+  redemptions SouvenirRedemption[]
+}
+
+model SouvenirRedemption {
+  id         String   @id @default(uuid())
+  userId     String
+  souvenirId String
+  redeemedAt DateTime @default(now())
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  souvenir Souvenir @relation(fields: [souvenirId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }

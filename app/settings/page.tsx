@@ -21,6 +21,9 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { SettingsGroup } from "@/components/settings/settings-group";
+import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
+import { useStampStore } from "@/store/use-stamp-store";
 
 // Setting groups configuration
 const settingsGroups = [
@@ -86,8 +89,18 @@ export default function SettingsPage() {
     }
   );
 
+  const router = useRouter();
+  const supabase = createClient();
+  const { setUserId } = useStampStore();
+
   const handleToggle = (id: string) => {
     setToggleStates((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const handleLogOut = async () => {
+    await supabase.auth.signOut();
+    setUserId(null);
+    router.push("/auth");
   };
 
   return (
@@ -122,6 +135,7 @@ export default function SettingsPage() {
         {/* Logout button — shadcn/ui Button with destructive variant */}
         <Button
           variant="outline"
+          onClick={handleLogOut}
           className="flex w-full items-center justify-center gap-2 rounded-2xl py-3.5 h-auto text-sm font-semibold text-destructive border-destructive/20 hover:bg-destructive/5 hover:text-destructive glass"
         >
           <LogOut className="h-4 w-4" />

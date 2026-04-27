@@ -1,10 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, use } from "react";
 import { LocationContent } from "@/components/location/location-content";
 
-export default function LocationModal() {
+export default function LocationModal({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = use(params);
   const router = useRouter();
   const scrollRef = useRef<HTMLDivElement>(null);
   
@@ -93,7 +94,7 @@ export default function LocationModal() {
         </div>
 
         {/* Centralized Location View Content & 3D Viewer */}
-        <LocationContent />
+        <LocationContent locationId={resolvedParams.id} />
 
       </div>
     </div>
