@@ -1,9 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
-import { useStampStore } from "@/store/use-stamp-store";
-import { Button } from "@/components/ui/button";
+import { useStampStore, type MapOption } from "@/store/use-stamp-store";
 import { Wifi, Sparkles, BookOpen } from "lucide-react";
 
 // Extracted Components
@@ -18,61 +16,63 @@ import { BookPageModals } from "./components/book-page-modals";
  * Premium Glassmorphism + Claymorphism aesthetic.
  */
 export default function StampBookPage() {
-  const { 
-    collectedStamps, totalStamps, locations, availableMaps, userBooks, selectedMap, 
+  const {
+    collectedStamps, totalStamps, locations, availableMaps, userBooks, selectedMap,
     fetchStamps, fetchLocations, addStamp, fetchAvailableMaps, fetchUserBooks, deleteUserBook, addUserBook
   } = useStampStore();
-  
-  // Book specific state
-  const [selectedBook, setSelectedBook] = useState(selectedMap);
 
+  // Tracks which book is currently displayed — null means no books exist
+  const [selectedBook, setSelectedBook] = useState<MapOption | null>(selectedMap ?? null);
+
+  // Fetch available zones and user books on mount
   useEffect(() => {
     fetchAvailableMaps();
     fetchUserBooks();
   }, [fetchAvailableMaps, fetchUserBooks]);
 
-  // Sync selectedBook with selectedMap when it changes
+  // If there are no user books yet, fall back to the global selectedMap
   useEffect(() => {
-    if (selectedMap && !userBooks.length) {
+    if (!userBooks.length && selectedMap) {
       setSelectedBook(selectedMap);
     }
   }, [selectedMap, userBooks.length]);
 
+  // Keep selectedBook valid: if deleted, move to first remaining book
   useEffect(() => {
-    if (userBooks.length > 0) {
-      const exists = userBooks.find(b => b.id === selectedBook?.id);
-      if (!exists) {
-        setSelectedBook(userBooks[0]);
-      }
-    } else {
-      setSelectedBook(null as any);
+    if (userBooks.length === 0) {
+      setSelectedBook(null);
+      return;
     }
-  }, [userBooks]);
+    const stillExists = userBooks.some((b) => b.id === selectedBook?.id);
+    if (!stillExists) setSelectedBook(userBooks[0]);
+  }, [userBooks, selectedBook?.id]);
 
+  // Fetch stamps & locations whenever the active book changes
   useEffect(() => {
-    if (selectedBook && selectedBook.name) {
+    if (selectedBook?.name) {
       fetchStamps(selectedBook.name);
       fetchLocations(selectedBook.name);
     }
   }, [fetchStamps, fetchLocations, selectedBook?.name]);
 
+  // Derive stamp book list from userBooks for the modal
   const stampBooks = userBooks.map((map) => ({
     id: map.id,
     country: map.name,
     bookNumber: 1,
     stampsCollected: map.id === selectedBook?.id ? collectedStamps.length : 0,
     totalStamps: map.id === selectedBook?.id ? totalStamps : 0,
-    lastStampDate: collectedStamps.length > 0 ? collectedStamps[0].collectedAt : "",
   }));
 
+  // Derive stamp pages from locations + collectedStamps
   const stampPages = locations.map((loc) => {
     const stamp = collectedStamps.find((s) => s.locationId === loc.id);
     return {
       id: loc.id,
       locationName: loc.name,
-      koreanName: (loc as any).koreanName || "",
-      description: (loc as any).description || "",
-      stampDate: stamp ? new Date(stamp.collectedAt).toISOString().split('T')[0] : "",
+      koreanName: (loc as any).koreanName ?? "",
+      description: (loc as any).description ?? "",
+      stampDate: stamp ? new Date(stamp.collectedAt).toISOString().split("T")[0] : "",
       stamped: !!stamp,
       stampImage: stamp ? "true" : "",
     };
@@ -88,15 +88,15 @@ export default function StampBookPage() {
   const [showNfcModal, setShowNfcModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
-  const handleNextPage = () => { if (currentPage < stampPages.length - 1) setCurrentPage(p => p + 1); };
-  const handlePrevPage = () => { if (currentPage > 0) setCurrentPage(p => p - 1); };
+  const handleNextPage = () => { if (currentPage < stampPages.length - 1) setCurrentPage((p) => p + 1); };
+  const handlePrevPage = () => { if (currentPage > 0) setCurrentPage((p) => p - 1); };
 
+  // Simulate NFC stamp collection
   const handleNfcCollect = () => {
     setShowNfcModal(true);
     setTimeout(() => {
       setShowNfcModal(false);
-      // Simulate random stamp collection
-      const uncollected = locations.filter(loc => !collectedStamps.some(s => s.locationId === loc.id));
+      const uncollected = locations.filter((loc) => !collectedStamps.some((s) => s.locationId === loc.id));
       if (uncollected.length > 0) {
         const randomLoc = uncollected[Math.floor(Math.random() * uncollected.length)];
         addStamp({
@@ -105,7 +105,7 @@ export default function StampBookPage() {
           locationName: randomLoc.name,
           image: "🏛️",
           description: "Collected via NFC simulation",
-          collectedAt: new Date().toISOString()
+          collectedAt: new Date().toISOString(),
         });
       }
       setShowSuccessModal(true);
@@ -128,9 +128,10 @@ export default function StampBookPage() {
 
           {/* Right actions */}
           <div className="flex items-center gap-2">
-            {/* Back button (ebook mode) */}
+            {/* Back button (ebook mode only) */}
             {showEbook && (
               <button
+                type="button"
                 onClick={() => setShowEbook(false)}
                 className="rounded-xl px-3.5 py-2 text-xs font-bold text-ink-muted bg-surface-subtle transition-all hover:text-ink active:scale-95"
               >
@@ -138,10 +139,11 @@ export default function StampBookPage() {
               </button>
             )}
 
-            {/* NFC collect button */}
+            {/* NFC collect button (cover mode only) */}
             {!showEbook && (
               <button
                 id="nfc-collect-btn"
+                type="button"
                 onClick={handleNfcCollect}
                 className="flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold text-brand transition-all active:scale-95 glass-tint-blue"
               >
@@ -181,7 +183,7 @@ export default function StampBookPage() {
                   onClick={() => { setCurrentPage(0); setShowEbook(true); }}
                   title={selectedBook.name.toUpperCase()}
                   subtitle="STAMPBOOK"
-                  date={new Date().toISOString().split('T')[0]}
+                  date={new Date().toISOString().split("T")[0]}
                 />
 
                 <ProgressCard
@@ -191,30 +193,32 @@ export default function StampBookPage() {
                 />
               </>
             ) : (
+              /* Empty state */
               <div className="flex flex-col items-center justify-center py-20 text-center opacity-80">
-                 <div className="h-20 w-20 rounded-full bg-slate-100 flex items-center justify-center mb-4">
-                    <BookOpen className="h-8 w-8 text-slate-400" />
-                 </div>
-                 <h2 className="text-xl font-bold text-slate-700">No Stamp Books Yet</h2>
-                 <p className="text-sm text-slate-500 mt-2 max-w-[250px]">
-                    Create a new digital passport to start collecting stamps on your journey.
-                 </p>
+                <div className="h-20 w-20 rounded-full bg-slate-100 flex items-center justify-center mb-4">
+                  <BookOpen className="h-8 w-8 text-slate-400" />
+                </div>
+                <h2 className="text-xl font-bold text-slate-700">No Stamp Books Yet</h2>
+                <p className="text-sm text-slate-500 mt-2 max-w-[250px]">
+                  Create a new digital passport to start collecting stamps on your journey.
+                </p>
               </div>
             )}
 
             {/* Action buttons */}
             <div className="mt-6 flex w-full max-w-[340px] flex-col gap-3">
-
-              {/* Change Book — glass pill style */}
+              {/* Change Book */}
               <button
+                type="button"
                 onClick={() => setShowChangeBook(true)}
                 className="w-full rounded-[16px] py-3.5 text-sm font-bold text-brand transition-all duration-200 active:scale-[0.98] glass border border-brand/20 shadow-soft"
               >
                 Change Book
               </button>
 
-              {/* Add New Book — gradient clay button */}
+              {/* Add New Book */}
               <button
+                type="button"
                 onClick={() => setShowAddBook(true)}
                 className="w-full rounded-[16px] py-3.5 text-sm font-bold text-white transition-all duration-200 active:scale-[0.98] gradient-jeju shadow-[inset_0_3px_6px_rgba(255,255,255,0.25),inset_0_-2px_4px_rgba(0,0,0,0.10),0_8px_24px_rgba(59,108,244,0.40)]"
               >
@@ -237,15 +241,15 @@ export default function StampBookPage() {
         stampBooks={stampBooks}
         availableCountries={availableMaps}
         onSelectBook={(id) => {
-          const map = userBooks.find(m => m.id === id);
+          const map = userBooks.find((m) => m.id === id);
           if (map) setSelectedBook(map);
         }}
         onAddBook={(id) => addUserBook(id)}
         onDeleteBook={(id) => {
           deleteUserBook(id);
           if (selectedBook?.id === id) {
-             const remaining = userBooks.filter(b => b.id !== id);
-             setSelectedBook(remaining.length > 0 ? remaining[0] : null as any);
+            const remaining = userBooks.filter((b) => b.id !== id);
+            setSelectedBook(remaining.length > 0 ? remaining[0] : null);
           }
         }}
       />

@@ -35,6 +35,9 @@ An interactive, mobile-first stamp collection map and digital passport applicati
 - **Souvenir Exchange Hub:** Frosted glass card grid with ambient emoji glow, clay redeem button, and glassmorphism exchange modal with success state.
 - **Floating Bottom Nav:** Glassmorphism floating pill with 3D clay left-most Map button and active dot indicators.
 - **Performance Optimized:** Clean component structure migrated completely from inline styles to pure Tailwind v4 utility classes.
+- **Stamp Book Management:** Users can create multiple stamp books per zone, switch between them, and delete existing books via a glassmorphism dialog.
+- **Accessible Interactive Lists:** Book selection rows use `div[role=button]` to prevent invalid `<button>` nesting while maintaining full keyboard accessibility.
+
 
 ## 📁 Directory Structure
 

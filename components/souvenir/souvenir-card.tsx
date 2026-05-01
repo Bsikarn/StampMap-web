@@ -2,14 +2,7 @@ import React from "react";
 import { Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-
-export interface SouvenirItem {
-  id: number;
-  name: string;
-  image: string;
-  stampsRequired: number;
-  inStock: boolean;
-}
+import type { SouvenirItem } from "@/store/use-stamp-store";
 
 interface SouvenirCardProps {
   item: SouvenirItem;

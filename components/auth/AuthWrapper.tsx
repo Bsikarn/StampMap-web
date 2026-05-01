@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useStampStore } from "@/store/use-stamp-store";
 import { useRouter, usePathname } from "next/navigation";
@@ -8,7 +8,8 @@ import { useRouter, usePathname } from "next/navigation";
 export function AuthWrapper({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const { setUserId } = useStampStore();
-  const supabase = createClient();
+  // Memoize the supabase client so it is not recreated on every render
+  const supabase = useMemo(() => createClient(), []);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -75,7 +76,7 @@ export function AuthWrapper({ children }: { children: React.ReactNode }) {
     return () => {
       authListener.subscription.unsubscribe();
     };
-  }, [pathname, router, setUserId, supabase.auth]);
+  }, [pathname, router, setUserId, supabase]);
 
   if (loading) {
     return (

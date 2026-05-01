@@ -198,17 +198,17 @@ export const useStampStore = create<StampStore>((set, get) => ({
       const res = await fetch('/api/zones');
       if (res.ok) {
         const data = await res.json();
-        console.log("Fetched zones:", data);
         const mapped = data.map((z: any) => ({ id: z.id, name: z.name }));
         set({ availableMaps: mapped });
         if (get().selectedMap.id === "jeju") {
-           // update default if found
-           const jeju = mapped.find((m: any) => m.name === "Jeju Island");
-           if (jeju) set({ selectedMap: jeju });
+          // Update default selectedMap if the real Jeju zone is found in DB
+          const jeju = mapped.find((m: any) => m.name === "Jeju Island");
+          if (jeju) set({ selectedMap: jeju });
         }
       }
     } catch (error) { console.error(error); }
   },
+
 
   fetchUserBooks: async () => {
     const { userId } = get();

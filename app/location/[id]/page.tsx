@@ -1,6 +1,5 @@
 "use client";
 
-import { BottomNav } from "@/components/bottom-nav";
 import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect, use } from "react";
 import { LocationContent } from "@/components/location/location-content";
@@ -99,8 +98,6 @@ export default function LocationDetailPage({ params }: { params: Promise<{ id: s
         <LocationContent locationId={resolvedParams.id} />
 
       </div>
-
-      <BottomNav />
     </div>
   );
 }

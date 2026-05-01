@@ -19,8 +19,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Sparkles, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { SouvenirItem } from "./souvenir-card";
-import { useStampStore } from "@/store/use-stamp-store";
+import { SouvenirItem, useStampStore } from "@/store/use-stamp-store";
+
+
 
 interface ExchangeModalProps {
   isOpen: boolean;

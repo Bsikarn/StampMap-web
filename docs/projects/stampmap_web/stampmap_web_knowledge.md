@@ -21,3 +21,28 @@
 ### 5. Transactional Data Updates (การอัปเดตข้อมูลด้วย Transaction)
 - **อธิบาย:** ใช้ Prisma `$transaction` สำหรับ Action สำคัญที่ต้องการความแม่นยำสูง
 - **การทำงาน:** สำหรับการแลกของที่ระลึก ระบบจะอ่านของที่ระลึก นับจำนวนแสตมป์ และบันทึกประวัติการแลกภายในบล็อก transaction เดียว หากเกิดข้อผิดพลาดตรงกลาง ข้อมูลทั้งหมดจะถูก rollback เพื่อไม่ให้เกิดข้อผิดพลาดด้านจำนวนแสตมป์
+
+### 6. div[role=button] Pattern — แก้ปัญหา Nested `<button>` (HTML Constraint Fix)
+- **อธิบาย:** HTML5 มีข้อห้ามไม่ให้ `<button>` มี `<button>` อยู่ข้างใน เมื่อแสดงรายการที่มีทั้งปุ่มกดเลือกรายการ และปุ่ม Delete ย่อยอยู่ภายใน จะเกิด React Hydration Error
+- **การทำงาน:** เปลี่ยน Outer Element จาก `<button>` เป็น `<div role="button" tabIndex={0}>` พร้อมจัดการ `onKeyDown` ให้ทำงานเมื่อกด `Enter` หรือ `Space` เพื่อรักษา Keyboard Accessibility ส่วน Inner Delete Button ยังคงเป็น `<button>` ตามปกติ และใช้ `e.stopPropagation()` เพื่อกัน Event ไม่ให้ bubble ขึ้นไปยัง Outer Element
+- **ตัวอย่างโค้ด:**
+```tsx
+// ✅ ถูกต้อง — ไม่มี <button> ซ้อนกัน
+<div
+  role="button"
+  tabIndex={0}
+  onClick={handleSelect}
+  onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") handleSelect(); }}
+>
+  <span>Label</span>
+  <button onClick={(e) => { e.stopPropagation(); handleDelete(); }}>
+    Delete
+  </button>
+</div>
+```
+
+### 7. Type Single Source of Truth — Interface กลางจาก Store
+- **อธิบาย:** เมื่อ Interface เดียวกัน (เช่น `SouvenirItem`) ถูก Define ซ้ำหลายที่ จะเกิด Type Mismatch Error เมื่อ property ไม่ตรงกัน (เช่น `id: number` vs `id: string`)
+- **การทำงาน:** กำหนดให้ **Zustand Store (`use-stamp-store.ts`) เป็นที่เดียวที่ Define Interface** ทุก Component อื่นต้อง `import type` จาก Store แทนการ Define ซ้ำ ป้องกัน Duplicate Type และ Drift ระหว่าง Components
+- **กฎ:** ห้าม Export Interface จาก Component File (`souvenir-card.tsx`) — ให้ Export จาก Store หรือ Types File เท่านั้น
+

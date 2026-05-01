@@ -1,5 +1,4 @@
 import { Calendar, TrendingUp } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
 
 interface ProgressCardProps {
   date: string;
@@ -13,7 +12,8 @@ interface ProgressCardProps {
  * Displays collected vs total stamps with progress bar.
  */
 export function ProgressCard({ date, collected, total }: ProgressCardProps) {
-  const pct = Math.round((collected / total) * 100);
+  // Guard against division by zero when no locations are loaded yet
+  const pct = total > 0 ? Math.round((collected / total) * 100) : 0;
 
   return (
     <div className="glass shadow-soft mx-auto mt-5 w-full max-w-[340px] rounded-[22px] p-5 border border-white/65">
