@@ -1,63 +1,73 @@
-# Un-Old-Jeju (StampMap)
+# StampMap-web
 
-An interactive, mobile-first stamp collection map and digital passport application designed to gamify real-world exploration on Jeju Island, South Korea.
+An interactive, mobile-first stamp collection map and digital passport application. A personal project for Sikarn Pattarasirimongkol, designed to gamify real-world exploration and showcase Full-stack development skills.
 
-## 🛠️ Tech Stack
+## Tech Stack
 
-**Languages**
-- TypeScript, HTML, CSS
+### Languages
+- TypeScript
+- HTML
+- CSS
 
-**Frontend (Web App)**
-- **Framework:** Next.js 16+ (App Router, Turbopack)
-- **Library:** React 19
-- **Styling:** Tailwind CSS v4, shadcn/ui
-- **State Management:** Zustand
-- **Icons:** lucide-react
-- **Map Engine:** maplibre-gl & react-map-gl (with OpenFreeMap)
+### Frontend
+- Next.js 16+ (App Router)
+- React 19
+- Tailwind CSS v4
+- shadcn/ui
+- Zustand
+- maplibre-gl & react-map-gl
 
-**Backend & Database**
-- **API:** Next.js Route Handlers
-- **Database:** PostgreSQL (via Supabase)
-- **ORM:** Prisma v7
-- **Authentication:** @supabase/ssr
+### Backend & Database
+- Next.js Route Handlers
+- PostgreSQL (via Supabase)
+- Prisma ORM v7
+- @supabase/ssr
 
-## ✨ Active Features
+### Tools
+- ESLint
+- TypeScript Compiler
+- PostCSS
 
-- **Live Data Integration:** Entire app connected to Supabase (PostgreSQL) via Prisma ORM, replacing all previous mock data for locations, stamps, and souvenirs.
-- **Multi-Region Support:** Added support for toggling regions (e.g. "Jeju Island" and "Thailand") across Database schema, APIs, Zustand store, and UI components.
-- **Supabase Authentication:** Fully integrated authentication via `@supabase/ssr` supporting manual Sign Up, Log In, and Log Out.
-- **Silent Guest Login:** Implemented an `AuthWrapper` that automatically authenticates users into a "Demo Account" (`demo@unoldjeju.com`) on their first visit, offering a frictionless portfolio showcase. Users can log out to test the manual Auth flow.
-- **Interactive Jeju Map Dashboard:** SVG Jeju Island silhouette with topographic contours, compass rose, scale bar, and an interactive MapLibre map with Zone-to-Zoom.
-- **Dynamic Map Pins:** Markers are rendered using real GPS coordinates (Latitude/Longitude) from the database, correctly handling map zoom and pan.
-- **Premium Splash Screen:** 3D clay logo, orbital spinning rings, floating Jeju location badges, animated loading bar.
-- **Stamp Book (Digital Passport):** 3D claymorphism orange book cover with Hallasan mountain SVG emblem and glassmorphism progress widget.
-- **Ebook Stamp Viewer:** Glass page card with decorative SVG landscape, authentic Jeju stamp imprint, memo input, and pill-style pagination.
-- **Souvenir Exchange Hub:** Frosted glass card grid with ambient emoji glow, clay redeem button, and glassmorphism exchange modal with success state.
-- **Floating Bottom Nav:** Glassmorphism floating pill with 3D clay left-most Map button and active dot indicators.
-- **Performance Optimized:** Clean component structure migrated completely from inline styles to pure Tailwind v4 utility classes.
-- **Stamp Book Management:** Users can create multiple stamp books per zone, switch between them, and delete existing books via a glassmorphism dialog.
-- **Accessible Interactive Lists:** Book selection rows use `div[role=button]` to prevent invalid `<button>` nesting while maintaining full keyboard accessibility.
+## Active Features
 
+- **Live Data Integration** — Entire app connected to Supabase via Prisma ORM for locations, stamps, and souvenirs.
+- **Multi-Region Support** — Support for toggling regions like "Jeju Island" and "Thailand" across Database, APIs, and UI.
+- **Supabase Authentication** — Fully integrated authentication supporting manual Sign Up, Log In, and Log Out.
+- **Silent Guest Login** — Automatically authenticates users into a "Demo Account" on their first visit for a frictionless experience.
+- **Interactive Map Dashboard** — SVG silhouette with topographic contours and an interactive MapLibre map with dynamic markers.
+- **Digital Passport** — 3D claymorphism orange book cover with authentic stamp imprints and progress tracking.
+- **Souvenir Exchange Hub** — Frosted glass marketplace with a clay redeem button for exchanging collected stamps.
 
-## 📁 Directory Structure
+## Directory Structure
 
-- `app/` (**✔️ SAFE TO MODIFY**): All Next.js App Router endpoints.
-  - `api/` : Backend Route Handlers for Supabase (Locations, Stamps, Souvenirs).
-  - `@modal/` : Parallel route intercepting `/location/[id]`.
-  - `location/` : Standalone location detail page.
-  - `splash/` : Animated splash screen with clay logo.
-  - `book/` : Digital passport & stamp book.
-  - `souvenir/` : Souvenir exchange marketplace page.
-  - `auth/` : Authentication screen.
-  - `settings/` : App settings & preferences.
-- `components/` (**✔️ SAFE TO MODIFY**): Global reusable components.
-  - `map/` : `jeju-map.tsx` (MapLibre), `map-pins.tsx` (clay 3D pins), `map-background.tsx` (SVG Jeju Island).
-  - `souvenir/` : `souvenir-card.tsx` (Badge + token utilities), `exchange-modal.tsx`.
-  - `location/` : Star ratings, reviews.
-  - `settings/` : `settings-group.tsx`.
-  - `ui/` (**❌ DO NOT TOUCH**): shadcn/ui primitive components.
-- `lib/` : Helper functions and mock data models.
-- `store/` : Zustand global state stores with async data fetching.
-- `prisma/` : Database schema and `seed.ts` for populating real Jeju data.
-- `prisma.config.ts` : Centralized Prisma V7 configuration.
-- `.env` : Database connection secrets (SAFE in local, ignored in git).
+```text
+app/                 # Next.js App Router endpoints
+  api/               # Backend Route Handlers
+  @modal/            # Intercepting routes
+  location/          # Standalone location pages
+  splash/            # Animated splash screen
+  book/              # Digital passport & stamp book
+  souvenir/          # Marketplace
+  auth/              # Authentication
+  settings/          # App preferences
+components/          # Global reusable components
+  map/               # MapLibre & SVG map utilities
+  souvenir/          # Souvenir related components
+  ui/                # ⚠️ DO NOT TOUCH (shadcn primitives)
+lib/                 # Helper utilities and Prisma clients
+prisma/              # Database schema and seed data
+store/               # Zustand global state
+docs/                # Project documentation
+public/              # Static assets
+.env                 # ⚠️ Local secrets
+package.json         # ⚠️ Project dependencies
+prisma.config.ts     # ⚠️ Prisma configuration
+```
+
+## Environment Variables
+
+```env
+VITE_SUPABASE_URL=
+VITE_SUPABASE_ANON_KEY=
+DATABASE_URL=
+```
